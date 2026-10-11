@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craft Attack 14 - Offizieller Shop</title>
+    <title>Craft Attack 14 - Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0d0e12;
-            --card-bg: #18191f;
+            --bg-dark: #0f1015;
+            --card-bg: #181a20;
             --accent-diamond: #55ffff;
             --accent-green: #55ff55;
-            --accent-orange: #ffaa00;
+            --accent-gold: #ffaa00;
             --text-light: #f0f0f0;
-            --border-pixel: #2e303b;
+            --border-pixel: #2a2d3d;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,40 +22,71 @@
             background-color: var(--bg-dark);
             color: var(--text-light);
             font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(#1e1f28 1px, transparent 1px);
-            background-size: 24px 24px;
             padding: 20px;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
 
         header {
-            background: rgba(24, 25, 31, 0.95);
+            text-align: center;
+            padding: 30px 20px;
+            background: var(--card-bg);
             border: 3px solid var(--border-pixel);
-            padding: 20px 25px;
             border-radius: 8px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: 30px;
         }
 
         h1 {
             font-family: 'Press Start 2P', cursive;
             color: var(--accent-diamond);
-            text-shadow: 3px 3px 0px #00aaaa, 4px 4px 0px #000;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
+            text-shadow: 3px 3px 0px #00aaaa;
+            margin-bottom: 10px;
         }
 
-        .header-actions { display: flex; gap: 10px; }
+        .shop-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
 
-        /* Buttons */
+        @media (max-width: 768px) {
+            .shop-layout { grid-template-columns: 1fr; }
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .item-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-pixel);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .item-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .item-price {
+            color: var(--accent-diamond);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
         .btn {
             font-family: 'Press Start 2P', cursive;
-            font-size: 0.65rem;
-            padding: 10px 14px;
+            font-size: 0.6rem;
+            padding: 10px;
             background: #2a2c38;
             color: #fff;
             border: 2px solid var(--border-pixel);
@@ -63,427 +94,172 @@
             border-radius: 4px;
             transition: all 0.2s;
         }
+
         .btn:hover { background: var(--accent-diamond); color: #000; }
-        .btn-success { background: #1b4d21; border-color: #2ea043; }
-        .btn-success:hover { background: var(--accent-green); color: #000; }
-        .btn-orange { background: #664300; border-color: var(--accent-orange); }
-        .btn-orange:hover { background: var(--accent-orange); color: #000; }
+        .btn-submit { background: #1e5a20; border-color: var(--accent-green); width: 100%; font-size: 0.7rem; padding: 12px; margin-top: 15px; }
+        .btn-submit:hover { background: var(--accent-green); color: #000; }
 
-        /* Status & Suche Bar */
-        .top-bar {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        @media (max-width: 768px) { .top-bar { grid-template-columns: 1fr; } }
-
-        .panel-box {
+        .cart-box {
             background: var(--card-bg);
             border: 2px solid var(--border-pixel);
-            padding: 18px;
             border-radius: 8px;
+            padding: 20px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
         }
 
-        .panel-title {
+        .cart-title {
             font-family: 'Press Start 2P', cursive;
-            font-size: 0.75rem;
-            color: var(--accent-diamond);
-            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border-pixel);
+            padding-bottom: 10px;
         }
-
-        .input-group { display: flex; gap: 8px; }
-
-        input, select, textarea {
-            width: 100%; padding: 10px; background: #0d0e12;
-            border: 2px solid var(--border-pixel); color: #fff;
-            border-radius: 4px; font-family: inherit; font-size: 0.85rem;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent-diamond); outline: none; }
-
-        /* Shop Grid */
-        .controls { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
-
-        .item-card {
-            background: var(--card-bg); border: 2px solid var(--border-pixel);
-            border-radius: 6px; padding: 18px; display: flex;
-            flex-direction: column; align-items: center; text-align: center;
-        }
-        .item-card:hover { border-color: var(--accent-diamond); transform: translateY(-3px); }
-
-        .item-icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .item-title { font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
-        .item-category { font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 8px; }
-        .item-price { font-family: 'Press Start 2P', cursive; color: var(--accent-diamond); font-size: 0.75rem; margin-bottom: 15px; }
-
-        /* Modals */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: flex; justify-content: center;
-            align-items: center; z-index: 100; padding: 20px;
-        }
-        .modal {
-            background: var(--card-bg); border: 3px solid var(--accent-diamond);
-            border-radius: 8px; padding: 25px; width: 100%; max-width: 500px;
-            max-height: 90vh; overflow-y: auto;
-        }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85rem; }
-
-        /* Badges */
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-        .badge-pending { background: #664d03; color: #ffda6a; }
-        .badge-done { background: #0f5132; color: #75b798; }
 
         .cart-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 0; border-bottom: 1px solid var(--border-pixel);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
         }
-        .hidden { display: none !important; }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background: #0f1015;
+            border: 1px solid var(--border-pixel);
+            color: #fff;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .total-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-diamond);
+            margin-top: 15px;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div>
-            <h1>CRAFT ATTACK 14 SHOP</h1>
-            <p style="color: #aaa; font-size: 0.85rem; margin-top: 5px;">Bestelle deine Minecraft Items bequem online!</p>
-        </div>
-        <div class="header-actions">
-            <button class="btn btn-orange" onclick="openModal('wish-modal')">💡 Wunschbox</button>
-            <button class="btn btn-success" onclick="openCartModal()">🛒 Warenkorb (<span id="cart-count">0</span>)</button>
-        </div>
+        <h1>💎 CA14 Item Shop</h1>
+        <p style="color: #aaa; margin-top: 5px;">Wähle deine Items, gib deine Daten ein und erhalte deine Lieferung!</p>
     </header>
 
-    <!-- OBERER BEREICH: Bestellstatus Prüfen & Suche -->
-    <div class="top-bar">
-        <div class="panel-box">
-            <div class="panel-title">🔎 Bestellstatus prüfen</div>
-            <div class="input-group">
-                <input type="text" id="status-user-input" placeholder="Dein Minecraft Name...">
-                <button class="btn" onclick="checkOrderStatus()">Suchen</button>
-            </div>
-            <div id="status-results" style="margin-top: 15px;"></div>
+    <div class="shop-layout">
+        <!-- Angebote -->
+        <div class="items-grid" id="items-container">
+            <!-- Dynamisch über JS -->
         </div>
 
-        <div class="panel-box">
-            <div class="panel-title">⚡ Schnellsuche</div>
-            <div class="input-group" style="margin-bottom: 10px;">
-                <input type="text" id="search-input" placeholder="Suchen (z.B. Elytra, Netherit)..." oninput="filterItems()">
+        <!-- Warenkorb & Checkout -->
+        <div class="cart-box">
+            <div class="cart-title">🛒 Warenkorb</div>
+            <div id="cart-list">
+                <p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist noch leer.</p>
             </div>
-            <select id="category-select" onchange="filterItems()">
-                <option value="all">Alle Kategorien</option>
-                <option value="Rüstung & Tools">Rüstung & Tools</option>
-                <option value="Erze & Rohstoffe">Erze & Rohstoffe</option>
-                <option value="Blöcke & Deko">Blöcke & Deko</option>
-                <option value="Farm-Items & Mobdrops">Farm-Items & Mobdrops</option>
-                <option value="Speziales & End">Speziales & End</option>
-            </select>
+
+            <div class="total-price" id="total-price">Gesamt: 0 💎</div>
+
+            <form id="order-form" style="margin-top: 20px;" onsubmit="handleOrder(event)">
+                <label style="font-size: 0.8rem; color: #aaa;">Minecraft Name *</label>
+                <input type="text" id="player-name" required placeholder="z.B. Steve">
+
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Koordinaten (Base/Kiste) *</label>
+                <input type="text" id="player-coords" required placeholder="X: 100, Y: 64, Z: -250">
+
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Notiz an Lieferant</label>
+                <textarea id="player-notes" rows="2" placeholder="z.B. Kiste steht links neben dem Tor"></textarea>
+
+                <button type="submit" class="btn btn-submit">Bestellung Abschicken 🚀</button>
+            </form>
         </div>
-    </div>
-
-    <!-- SHOP GRID -->
-    <main class="shop-grid" id="item-list"></main>
-</div>
-
-<!-- MODAL: WARENKORB & CHECKOUT -->
-<div id="cart-modal" class="modal-overlay hidden">
-    <div class="modal">
-        <h3 style="margin-bottom: 15px; color: var(--accent-diamond); font-family: 'Press Start 2P'; font-size: 0.9rem;">Dein Warenkorb</h3>
-        <div id="cart-items-list" style="margin-bottom: 15px;"></div>
-
-        <p style="text-align: right; font-weight: bold; font-size: 1rem; margin-bottom: 20px;">
-            Gesamt: <span id="cart-total-price" style="color: var(--accent-diamond);">0</span> 💎 Diamanten
-        </p>
-
-        <form id="checkout-form" onsubmit="submitCartOrder(event)">
-            <div class="form-group">
-                <label>Dein Minecraft Name *</label>
-                <input type="text" id="checkout-player" placeholder="z. B. Steve" required>
-            </div>
-
-            <div class="form-group">
-                <label>Koordinaten für Lieferung (Optional)</label>
-                <input type="text" id="checkout-coords" placeholder="z. B. X: 120, Y: 64, Z: -350">
-            </div>
-
-            <div class="form-group">
-                <label>Liefer-Anweisungen für Admins (Optional)</label>
-                <textarea id="checkout-notes" rows="2" placeholder="z. B. Bitte in die Kiste vor der Haustür legen! Bezahlt wird per Truhe daneben."></textarea>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button type="submit" class="btn btn-success" style="flex: 2;">Bestellung Abschicken</button>
-                <button type="button" class="btn" style="flex: 1;" onclick="closeModal('cart-modal')">Schließen</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- MODAL: WUNSCHBOX / FEEDBACK -->
-<div id="wish-modal" class="modal-overlay hidden">
-    <div class="modal">
-        <h3 style="margin-bottom: 15px; color: var(--accent-orange); font-family: 'Press Start 2P'; font-size: 0.85rem;">💡 Item Wünschen / Feedback</h3>
-        <form onsubmit="submitWish(event)">
-            <div class="form-group">
-                <label>Dein Minecraft Name</label>
-                <input type="text" id="wish-player" placeholder="z. B. Steve" required>
-            </div>
-            <div class="form-group">
-                <label>Welches Item fehlt / Dein Wunsch?</label>
-                <textarea id="wish-text" rows="3" placeholder="Ich wünsche mir z. B. Beacons oder Netherit-Upgrade-Templates im Shop..." required></textarea>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button type="submit" class="btn btn-orange" style="flex: 2;">Wunsch Absenden</button>
-                <button type="button" class="btn" style="flex: 1;" onclick="closeModal('wish-modal')">Abbrechen</button>
-            </div>
-        </form>
     </div>
 </div>
 
 <script>
-    const items = [
-        { id: 1, name: "Netherit Ingot", category: "Rüstung & Tools", price: 8, unit: "1 Stk", icon: "⬛" },
-        { id: 2, name: "Elytra", category: "Rüstung & Tools", price: 25, unit: "1 Stk", icon: "🕊️" },
-        { id: 3, name: "Diamant-Spitzhacke", category: "Rüstung & Tools", price: 4, unit: "1 Stk", icon: "⛏️" },
-        { id: 4, name: "Netherit-Brustplatte", category: "Rüstung & Tools", price: 15, unit: "1 Stk", icon: "🛡️" },
-        { id: 5, name: "Totem der Unsterblichkeit", category: "Rüstung & Tools", price: 5, unit: "1 Stk", icon: "🗿" },
-        { id: 6, name: "Stack Diamanten (64x)", category: "Erze & Rohstoffe", price: 64, unit: "1 Stack", icon: "💎" },
-        { id: 7, name: "Stack Eisen-Erz", category: "Erze & Rohstoffe", price: 2, unit: "1 Stack", icon: "⛓️" },
-        { id: 8, name: "Stack Gold-Erz", category: "Erze & Rohstoffe", price: 4, unit: "1 Stack", icon: "🪙" },
-        { id: 9, name: "Ancient Debris", category: "Erze & Rohstoffe", price: 7, unit: "1 Stk", icon: "🪨" },
-        { id: 10, name: "Doppelkiste Bausteine", category: "Blöcke & Deko", price: 2, unit: "Doppelkiste", icon: "🧱" },
-        { id: 11, name: "Schulker-Kiste (leer)", category: "Blöcke & Deko", price: 4, unit: "1 Stk", icon: "📦" },
-        { id: 12, name: "Stack Feuerwerksraketen", category: "Farm-Items & Mobdrops", price: 3, unit: "1 Stack", icon: "🎆" },
-        { id: 13, name: "Wither-Skelett-Schädel", category: "Farm-Items & Mobdrops", price: 4, unit: "1 Stk", icon: "💀" },
-        { id: 14, name: "Beacon / Leuchtfeuer", category: "Speziales & End", price: 15, unit: "1 Stk", icon: "🌟" },
-        { id: 15, name: "Trident (Dreizack)", category: "Speziales & End", price: 15, unit: "1 Stk", icon: "🔱" }
+    // CONFIG - TRAGE HIER DEINE DATEN EIN!
+    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1558967810447646780/4ZCgL92Nrg6pBzTpd1Z5kc7p2vZ7rHqBEyNbN5aO3CChpzRxeKTucd7pyY0PMELTMylu";
+    const BIN_ID = "6acc136bffd5d160536295cf";
+    const API_KEY = "$2a$10$gtwk9wEsW0YPPH4mQ.1/r.7StzFKPdcbFXmCvTkCKc8h4I/DWMiHW";
+
+    // Shop Sortiment
+    const products = [
+        { id: 1, name: "64x Elytra Repair (Phantom Membran)", price: 4 },
+        { id: 2, name: "1x Totem der Unsterblichkeit", price: 8 },
+        { id: 3, name: "64x Raketen (Stufe 3)", price: 2 },
+        { id: 4, name: "1x Diamant Spitzhacke (Mending)", price: 12 },
+        { id: 5, name: "64x Erfahungsfläschchen", price: 6 },
+        { id: 6, name: "1x Netherite Barren", price: 16 }
     ];
 
     let cart = [];
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1558967810447646780/4ZCgL92Nrg6pBzTpd1Z5kc7p2vZ7rHqBEyNbN5aO3CChpzRxeKTucd7pyY0PMELTMylu";
 
-    // Shop Anzeigen
-    function renderShop(filteredItems = items) {
-        const grid = document.getElementById('item-list');
-        grid.innerHTML = '';
-        filteredItems.forEach(item => {
-            grid.innerHTML += `
-                <div class="item-card">
-                    <div class="item-icon">${item.icon}</div>
-                    <div class="item-category">${item.category}</div>
-                    <div class="item-title">${item.name}</div>
-                    <div class="item-price">💎 ${item.price} / ${item.unit}</div>
-                    <button class="btn btn-success" onclick="addToCart(${item.id})">+ In den Warenkorb</button>
+    // Produkte rendern
+    function renderProducts() {
+        const container = document.getElementById('items-container');
+        container.innerHTML = products.map(p => `
+            <div class="item-card">
+                <div>
+                    <div class="item-title">${p.name}</div>
+                    <div class="item-price">💎 ${p.price} Dias</div>
                 </div>
-            `;
-        });
+                <button class="btn" onclick="addToCart(${p.id})">+ Hinzufügen</button>
+            </div>
+        `).join('');
     }
 
-    function filterItems() {
-        const search = document.getElementById('search-input').value.toLowerCase();
-        const category = document.getElementById('category-select').value;
-        const filtered = items.filter(item => {
-            return item.name.toLowerCase().includes(search) && (category === 'all' || item.category === category);
-        });
-        renderShop(filtered);
-    }
-
-    // Warenkorb Logik
-    function addToCart(itemId) {
-        const item = items.find(i => i.id === itemId);
-        const existing = cart.find(c => c.id === itemId);
+    function addToCart(productId) {
+        const item = products.find(p => p.id === productId);
+        const existing = cart.find(c => c.id === productId);
+        
         if (existing) {
-            existing.amount += 1;
+            existing.amount++;
         } else {
             cart.push({ ...item, amount: 1 });
         }
-        updateCartCount();
-        alert(`"${item.name}" wurde zum Warenkorb hinzugefügt!`);
+        updateCartUI();
     }
 
-    function updateCartCount() {
-        const totalCount = cart.reduce((sum, item) => sum + item.amount, 0);
-        document.getElementById('cart-count').innerText = totalCount;
-    }
-
-    function openCartModal() {
-        renderCartList();
-        openModal('cart-modal');
-    }
-
-    function renderCartList() {
-        const list = document.getElementById('cart-items-list');
-        list.innerHTML = '';
-        let total = 0;
+    function updateCartUI() {
+        const cartContainer = document.getElementById('cart-list');
+        const totalContainer = document.getElementById('total-price');
 
         if (cart.length === 0) {
-            list.innerHTML = `<p style="text-align:center; color:#888; padding:15px;">Dein Warenkorb ist leer.</p>`;
-            document.getElementById('cart-total-price').innerText = 0;
+            cartContainer.innerHTML = `<p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist noch leer.</p>`;
+            totalContainer.innerText = "Gesamt: 0 💎";
             return;
         }
 
-        cart.forEach(item => {
+        let total = 0;
+        cartContainer.innerHTML = cart.map(item => {
             const itemTotal = item.price * item.amount;
             total += itemTotal;
-            list.innerHTML += `
+            return `
                 <div class="cart-item">
-                    <div>
-                        <strong>${item.name}</strong><br>
-                        <small style="color:#aaa;">💎 ${item.price} x ${item.amount}</small>
-                    </div>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <span style="color:var(--accent-diamond); font-weight:bold;">💎 ${itemTotal}</span>
-                        <button class="btn" style="padding:4px 8px;" onclick="changeCartAmount(${item.id}, -1)">-</button>
-                        <button class="btn" style="padding:4px 8px;" onclick="changeCartAmount(${item.id}, 1)">+</button>
-                    </div>
+                    <span><b>${item.amount}x</b> ${item.name}</span>
+                    <span>💎 ${itemTotal}</span>
                 </div>
             `;
-        });
-        document.getElementById('cart-total-price').innerText = total;
+        }).join('');
+
+        totalContainer.innerText = `Gesamt: ${total} 💎`;
     }
 
-    function changeCartAmount(id, delta) {
-        const item = cart.find(c => c.id === id);
-        if (item) {
-            item.amount += delta;
-            if (item.amount <= 0) {
-                cart = cart.filter(c => c.id !== id);
-            }
-        }
-        updateCartCount();
-        renderCartList();
-    }
-
-    // Bestellung Abschicken + Discord Webhook
-    function submitCartOrder(e) {
+    async function handleOrder(e) {
         e.preventDefault();
         if (cart.length === 0) {
             alert("Dein Warenkorb ist leer!");
             return;
         }
 
-        const player = document.getElementById('checkout-player').value;
-        const coords = document.getElementById('checkout-coords').value || "Keine Angaben";
-        const notes = document.getElementById('checkout-notes').value || "Keine Anweisungen";
-        const totalPrice = cart.reduce((s, i) => s + (i.price * i.amount), 0);
-        const orderId = Date.now();
-        const dateStr = new Date().toLocaleString();
-
-        const newOrder = {
-            id: orderId,
-            player: player,
-            cartItems: [...cart],
-            totalPrice: totalPrice,
-            coords: coords,
-            notes: notes,
-            status: "Offen",
-            date: dateStr
-        };
-
-        // Lokal speichern (für die Status-Abfrage auf der Website)
-        const orders = JSON.parse(localStorage.getItem('ca14_orders') || '[]');
-        orders.push(newOrder);
-        localStorage.setItem('ca14_orders', JSON.stringify(orders));
-
-        // An Discord Webhook senden
-        const itemsListString = cart.map(i => `• ${i.amount}x ${i.name}`).join('\n');
-        const discordPayload = {
-            embeds: [{
-                title: "🛒 Neue Craft Attack 14 Bestellung!",
-                color: 5635925, // Cyan / Diamant Farbton
-                fields: [
-                    { name: "👤 Spieler", value: player, inline: true },
-                    { name: "💎 Gesamtpreis", value: `${totalPrice} Diamanten`, inline: true },
-                    { name: "📍 Koordinaten", value: coords, inline: false },
-                    { name: "📦 Bestellte Items", value: itemsListString, inline: false },
-                    { name: "📝 Liefer-Hinweise", value: notes, inline: false }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
-
-        fetch(discordWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(discordPayload)
-        }).catch(err => console.error("Fehler beim Senden an Discord:", err));
-
-        alert(`Danke ${player}! Deine Bestellung wurde erfolgreich abgesendet und an das Admin-Team übermittelt.`);
-        cart = [];
-        updateCartCount();
-        document.getElementById('checkout-form').reset();
-        closeModal('cart-modal');
-    }
-
-    // Bestellstatus Abfragen
-    function checkOrderStatus() {
-        const username = document.getElementById('status-user-input').value.trim();
-        const resultsDiv = document.getElementById('status-results');
-        
-        if (!username) {
-            resultsDiv.innerHTML = `<span style="color:var(--accent-orange); font-size:0.8rem;">Bitte Minecraft Namen eingeben!</span>`;
-            return;
-        }
-
-        const orders = JSON.parse(localStorage.getItem('ca14_orders') || '[]');
-        const userOrders = orders.filter(o => o.player.toLowerCase() === username.toLowerCase());
-
-        if (userOrders.length === 0) {
-            resultsDiv.innerHTML = `<p style="color:#888; font-size:0.8rem;">Keine Bestellungen für "${username}" gefunden.</p>`;
-            return;
-        }
-
-        resultsDiv.innerHTML = userOrders.reverse().map(o => `
-            <div style="background:#0d0e12; padding:10px; border-radius:4px; margin-bottom:8px; border:1px solid var(--border-pixel); font-size:0.8rem;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <small style="color:#aaa;">${o.date}</small>
-                    <span class="badge ${o.status === 'Geliefert' ? 'badge-done' : 'badge-pending'}">${o.status}</span>
-                </div>
-                <div><b>Items:</b> ${o.cartItems ? o.cartItems.map(i => `${i.amount}x${i.name}`).join(', ') : o.item}</div>
-                <div style="color:var(--accent-diamond); margin-top:3px;">Gesamt: 💎 ${o.totalPrice} Dias</div>
-            </div>
-        `).join('');
-    }
-
-    // Wunschbox Absenden + An Discord senden
-    function submitWish(e) {
-        e.preventDefault();
-        const player = document.getElementById('wish-player').value;
-        const wish = document.getElementById('wish-text').value;
-
-        // An Discord Webhook als Wunsch senden
-        const discordPayload = {
-            embeds: [{
-                title: "💡 Neuer Item-Wunsch / Feedback!",
-                color: 16753920, // Orange
-                fields: [
-                    { name: "👤 Spieler", value: player, inline: true },
-                    { name: "💬 Wunsch / Nachricht", value: wish, inline: false }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
-
-        fetch(discordWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(discordPayload)
-        }).catch(err => console.error("Fehler beim Senden des Wunsches:", err));
-
-        alert("Danke für deine Nachricht! Der Wunsch wurde direkt an das Admin-Team übermittelt.");
-        document.getElementById('wish-text').value = '';
-        closeModal('wish-modal');
-    }
-
-    // Modal Steuerungen
-    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-    renderShop();
-</script>
-</body>
-</html>
+        const player = document.getElementById('player-name').value;
+        const coords = document.getElementById('player-coords').
