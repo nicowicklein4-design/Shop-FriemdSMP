@@ -58,6 +58,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
+            align-content: start;
         }
 
         .item-card {
@@ -74,7 +75,7 @@
         .item-title {
             font-weight: 700;
             margin-bottom: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .item-price {
@@ -157,7 +158,7 @@
     <div class="shop-layout">
         <!-- Angebote -->
         <div class="items-grid" id="items-container">
-            <!-- Dynamisch über JS -->
+            <!-- Wird per JS geladen -->
         </div>
 
         <!-- Warenkorb & Checkout -->
@@ -197,7 +198,7 @@
         { id: 2, name: "1x Totem der Unsterblichkeit", price: 8 },
         { id: 3, name: "64x Raketen (Stufe 3)", price: 2 },
         { id: 4, name: "1x Diamant Spitzhacke (Mending)", price: 12 },
-        { id: 5, name: "64x Erfahungsfläschchen", price: 6 },
+        { id: 5, name: "64x Erfahrungsfläschchen", price: 6 },
         { id: 6, name: "1x Netherite Barren", price: 16 }
     ];
 
@@ -262,4 +263,85 @@
         }
 
         const player = document.getElementById('player-name').value;
-        const coords = document.getElementById('player-coords').
+        const coords = document.getElementById('player-coords').value;
+        const notes = document.getElementById('player-notes').value || "Keine";
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.amount), 0);
+
+        const orderData = {
+            id: Date.now(),
+            player: player,
+            coords: coords,
+            notes: notes,
+            cartItems: cart,
+            totalPrice: totalPrice,
+            status: "Offen",
+            date: new Date().toLocaleString("de-DE")
+        };
+
+        // 1. An Discord Webhook senden
+        sendDiscordWebhook(orderData);
+
+        // 2. An JSONBin Cloud senden
+        await sendToCloud(orderData);
+
+        alert("Danke für deine Bestellung! Wir liefern so schnell wie möglich.");
+        cart = [];
+        document.getElementById('order-form').reset();
+        updateCartUI();
+    }
+
+    function sendDiscordWebhook(order) {
+        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("DEIN_DISCORD")) return;
+
+        const itemList = order.cartItems.map(i => `• **${i.amount}x** ${i.name}`).join('\n');
+        
+        const embed = {
+            title: "🛒 Neue Bestellung eingegangen!",
+            color: 5570559,
+            fields: [
+                { name: "👤 Spieler", value: order.player, inline: true },
+                { name: "💎 Gesamtpreis", value: `${order.totalPrice} Diamanten`, inline: true },
+                { name: "📍 Koordinaten", value: order.coords, inline: false },
+                { name: "📝 Notiz", value: order.notes, inline: false },
+                { name: "📦 Bestellte Items", value: itemList, inline: false }
+            ],
+            footer: { text: `Bestell-ID: ${order.id} | ${order.date}` }
+        };
+
+        fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ embeds: [embed] })
+        }).catch(err => console.error("Webhook Fehler:", err));
+    }
+
+    async function sendToCloud(orderData) {
+        if (!BIN_ID || BIN_ID.includes("DEINE_BIN")) return;
+
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let data = await res.json();
+            
+            let orders = Array.isArray(data.record) ? data.record : [];
+            orders.push(orderData);
+
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify(orders)
+            });
+        } catch (err) {
+            console.error("Cloud-Speicher Fehler:", err);
+        }
+    }
+
+    // Direkt beim Laden ausführen
+    renderProducts();
+</script>
+</body>
+</html>
