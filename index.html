@@ -134,7 +134,7 @@
             border: 1px solid var(--border-pixel);
             color: #fff;
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: 5px;
             font-family: 'Inter', sans-serif;
         }
 
@@ -177,8 +177,8 @@
                 <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Koordinaten (Base/Kiste) *</label>
                 <input type="text" id="player-coords" required placeholder="X: 100, Y: 64, Z: -250">
 
-                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Notiz an Lieferant</label>
-                <textarea id="player-notes" rows="2" placeholder="z.B. Kiste steht links neben dem Tor"></textarea>
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Wunschbox / Notiz an Lieferant</label>
+                <textarea id="player-notes" rows="2" placeholder="z.B. Kiste steht links neben dem Tor oder Extrawünsche"></textarea>
 
                 <button type="submit" class="btn btn-submit">Bestellung Abschicken 🚀</button>
             </form>
@@ -204,7 +204,6 @@
 
     let cart = [];
 
-    // Produkte rendern
     function renderProducts() {
         const container = document.getElementById('items-container');
         container.innerHTML = products.map(p => `
@@ -278,10 +277,7 @@
             date: new Date().toLocaleString("de-DE")
         };
 
-        // 1. An Discord Webhook senden
         sendDiscordWebhook(orderData);
-
-        // 2. An JSONBin Cloud senden
         await sendToCloud(orderData);
 
         alert("Danke für deine Bestellung! Wir liefern so schnell wie möglich.");
@@ -302,7 +298,7 @@
                 { name: "👤 Spieler", value: order.player, inline: true },
                 { name: "💎 Gesamtpreis", value: `${order.totalPrice} Diamanten`, inline: true },
                 { name: "📍 Koordinaten", value: order.coords, inline: false },
-                { name: "📝 Notiz", value: order.notes, inline: false },
+                { name: "📝 Wunschbox / Notiz", value: order.notes, inline: false },
                 { name: "📦 Bestellte Items", value: itemList, inline: false }
             ],
             footer: { text: `Bestell-ID: ${order.id} | ${order.date}` }
@@ -340,7 +336,6 @@
         }
     }
 
-    // Direkt beim Laden ausführen
     renderProducts();
 </script>
 </body>
