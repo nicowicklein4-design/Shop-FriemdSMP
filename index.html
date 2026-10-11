@@ -26,7 +26,7 @@
             padding: 20px;
         }
 
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         header {
             text-align: center;
@@ -34,7 +34,7 @@
             background: var(--card-bg);
             border: 3px solid var(--border-pixel);
             border-radius: 8px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         h1 {
@@ -45,19 +45,54 @@
             margin-bottom: 10px;
         }
 
+        .filter-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border-pixel);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn-cat {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            padding: 8px 10px;
+            background: #2a2c38;
+            color: #aaa;
+            border: 1px solid var(--border-pixel);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cat:hover, .btn-cat.active {
+            background: var(--accent-diamond);
+            color: #000;
+            border-color: var(--accent-diamond);
+        }
+
         .shop-layout {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 20px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .shop-layout { grid-template-columns: 1fr; }
         }
 
         .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
             gap: 15px;
             align-content: start;
         }
@@ -76,16 +111,16 @@
         .item-title {
             font-weight: 700;
             margin-bottom: 8px;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .item-price {
             color: var(--accent-diamond);
             font-weight: 600;
             margin-bottom: 12px;
+            font-size: 0.85rem;
         }
 
-        /* Wunschbox Style */
         .custom-wish-card {
             background: #1c1826;
             border: 2px dashed var(--accent-purple);
@@ -96,7 +131,7 @@
 
         .custom-wish-title {
             font-family: 'Press Start 2P', cursive;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--accent-purple);
             margin-bottom: 10px;
         }
@@ -171,32 +206,47 @@
 <div class="container">
     <header>
         <h1>💎 CA14 Item Shop</h1>
-        <p style="color: #aaa; margin-top: 5px;">Wähle deine Items, gib deine Daten ein und erhalte deine Lieferung!</p>
+        <p style="color: #aaa; margin-top: 5px;">Durchsuche alle Minecraft Items oder nutze die Wunschbox!</p>
     </header>
 
     <div class="shop-layout">
-        <!-- Links: Produkte & Wunschbox -->
+        <!-- Linke Spalte: Suche, Kategorien, Items, Wunschbox -->
         <div>
-            <!-- Standard Sortiment -->
-            <div class="items-grid" id="items-container">
-                <!-- Wird per JS geladen -->
+            <div class="filter-section">
+                <input type="text" id="search-input" placeholder="🔍 Item suchen (z.B. Stein, Netherite, Kiste)..." oninput="filterProducts()">
+                <div class="category-buttons" id="cat-buttons">
+                    <button class="btn-cat active" onclick="setCategory('Alle', this)">Alle</button>
+                    <button class="btn-cat" onclick="setCategory('building blocks', this)">Baublöcke</button>
+                    <button class="btn-cat" onclick="setCategory('colored blocks', this)">Farblöcke</button>
+                    <button class="btn-cat" onclick="setCategory('natural blocks', this)">Natur</button>
+                    <button class="btn-cat" onclick="setCategory('functional blocks', this)">Funktional</button>
+                    <button class="btn-cat" onclick="setCategory('redstone blocks', this)">Redstone</button>
+                    <button class="btn-cat" onclick="setCategory('tools & utilities', this)">Werkzeuge</button>
+                    <button class="btn-cat" onclick="setCategory('combat', this)">Kampf</button>
+                    <button class="btn-cat" onclick="setCategory('food & drinks', this)">Essen & Tränke</button>
+                    <button class="btn-cat" onclick="setCategory('ingredients', this)">Zutaten</button>
+                </div>
             </div>
 
-            <!-- ✨ WUNSCHBOX BEREICH ✨ -->
+            <div class="items-grid" id="items-container">
+                <p style="color:#aaa; grid-column:1/-1; text-align:center; padding:30px;">Lade Sortiment aus items.json...</p>
+            </div>
+
+            <!-- Wunschbox -->
             <div class="custom-wish-card">
                 <div class="custom-wish-title">🎁 Wunschbox (Sonderbestellung)</div>
                 <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 12px;">
-                    Dein Wunsch-Item ist nicht im Shop? Trage es hier ein & sag uns, was du zahlst!
+                    Nicht in der Liste gefunden? Trage dein Wunsch-Item und deinen Preis ein!
                 </p>
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-                    <input type="text" id="wish-item-name" placeholder="z. B. 1x Beacon / 64x Schwämme">
+                    <input type="text" id="wish-item-name" placeholder="z. B. 1x Beacon / Sonderwunsch">
                     <input type="number" id="wish-item-price" placeholder="Preis (Dias)" min="1">
                 </div>
                 <button class="btn btn-wish" style="margin-top: 10px; width: 100%;" onclick="addWishToCart()">+ Wunsch in Warenkorb legen</button>
             </div>
         </div>
 
-        <!-- Rechts: Warenkorb & Checkout -->
+        <!-- Rechte Spalte: Warenkorb & Checkout -->
         <div class="cart-box">
             <div class="cart-title">🛒 Warenkorb</div>
             <div id="cart-list">
@@ -227,35 +277,68 @@
     const BIN_ID = "6acc136bffd5d160536295cf";
     const API_KEY = "$2a$10$gtwk9wEsW0YPPH4mQ.1/r.7StzFKPdcbFXmCvTkCKc8h4I/DWMiHW";
 
-    // Shop Sortiment
-    const products = [
-        { id: 1, name: "64x Elytra Repair (Phantom Membran)", price: 4 },
-        { id: 2, name: "1x Totem der Unsterblichkeit", price: 8 },
-        { id: 3, name: "64x Raketen (Stufe 3)", price: 2 },
-        { id: 4, name: "1x Diamant Spitzhacke (Mending)", price: 12 },
-        { id: 5, name: "64x Erfahrungsfläschchen", price: 6 },
-        { id: 6, name: "1x Netherite Barren", price: 16 }
-    ];
-
+    let products = [];
+    let currentCategory = "Alle";
     let cart = [];
+
+    // items.json laden beim Start der Seite
+    async function loadProducts() {
+        try {
+            let res = await fetch('items.json');
+            if (!res.ok) throw new Error("Netzwerk-Antwort war nicht ok");
+            products = await res.json();
+            renderProducts();
+        } catch (err) {
+            console.error("Fehler beim Laden von items.json:", err);
+            document.getElementById('items-container').innerHTML = `
+                <p style="color:red; grid-column:1/-1; text-align:center; padding: 20px;">
+                    <b>Fehler:</b> Konnte 'items.json' nicht laden. Stelle sicher, dass die Datei im selben Ordner auf GitHub liegt!
+                </p>`;
+        }
+    }
 
     function renderProducts() {
         const container = document.getElementById('items-container');
-        container.innerHTML = products.map(p => `
+        const searchInput = document.getElementById('search-input').value.toLowerCase();
+
+        const filtered = products.filter(p => {
+            const matchesCat = (currentCategory === "Alle" || p.category === currentCategory);
+            const matchesSearch = p.name.toLowerCase().includes(searchInput) || p.id.toLowerCase().includes(searchInput);
+            return matchesCat && matchesSearch;
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<p style="color: #888; grid-column: 1/-1; text-align: center; padding: 20px;">Kein Item gefunden. Nutze die <b>Wunschbox</b> unten!</p>`;
+            return;
+        }
+
+        container.innerHTML = filtered.map(p => `
             <div class="item-card">
                 <div>
                     <div class="item-title">${p.name}</div>
                     <div class="item-price">💎 ${p.price} Dias</div>
                 </div>
-                <button class="btn" onclick="addToCart(${p.id})">+ Hinzufügen</button>
+                <button class="btn" onclick="addToCart('${p.id}')">+ Hinzufügen</button>
             </div>
         `).join('');
     }
 
+    function setCategory(catName, btnElement) {
+        currentCategory = catName;
+        document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        renderProducts();
+    }
+
+    function filterProducts() {
+        renderProducts();
+    }
+
     function addToCart(productId) {
         const item = products.find(p => p.id === productId);
+        if (!item) return;
+
         const existing = cart.find(c => c.id === productId);
-        
         if (existing) {
             existing.amount++;
         } else {
@@ -264,7 +347,6 @@
         updateCartUI();
     }
 
-    // Wunschbox-Item hinzufügen
     function addWishToCart() {
         const nameInput = document.getElementById('wish-item-name');
         const priceInput = document.getElementById('wish-item-price');
@@ -304,7 +386,7 @@
         }
 
         let total = 0;
-        cartContainer.innerHTML = cart.map((item, index) => {
+        cartContainer.innerHTML = cart.map(item => {
             const itemTotal = item.price * item.amount;
             total += itemTotal;
             return `
@@ -400,7 +482,8 @@
         }
     }
 
-    renderProducts();
+    // Beim Laden ausführen
+    loadProducts();
 </script>
 </body>
 </html>
