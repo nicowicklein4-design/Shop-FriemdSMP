@@ -12,6 +12,7 @@
             --accent-diamond: #55ffff;
             --accent-green: #55ff55;
             --accent-gold: #ffaa00;
+            --accent-purple: #dcb0ff;
             --text-light: #f0f0f0;
             --border-pixel: #2a2d3d;
         }
@@ -84,6 +85,22 @@
             margin-bottom: 12px;
         }
 
+        /* Wunschbox Style */
+        .custom-wish-card {
+            background: #1c1826;
+            border: 2px dashed var(--accent-purple);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .custom-wish-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.85rem;
+            color: var(--accent-purple);
+            margin-bottom: 10px;
+        }
+
         .btn {
             font-family: 'Press Start 2P', cursive;
             font-size: 0.6rem;
@@ -97,6 +114,8 @@
         }
 
         .btn:hover { background: var(--accent-diamond); color: #000; }
+        .btn-wish { background: #4a2168; border-color: var(--accent-purple); }
+        .btn-wish:hover { background: var(--accent-purple); color: #000; }
         .btn-submit { background: #1e5a20; border-color: var(--accent-green); width: 100%; font-size: 0.7rem; padding: 12px; margin-top: 15px; }
         .btn-submit:hover { background: var(--accent-green); color: #000; }
 
@@ -156,12 +175,28 @@
     </header>
 
     <div class="shop-layout">
-        <!-- Angebote -->
-        <div class="items-grid" id="items-container">
-            <!-- Wird per JS geladen -->
+        <!-- Links: Produkte & Wunschbox -->
+        <div>
+            <!-- Standard Sortiment -->
+            <div class="items-grid" id="items-container">
+                <!-- Wird per JS geladen -->
+            </div>
+
+            <!-- ✨ WUNSCHBOX BEREICH ✨ -->
+            <div class="custom-wish-card">
+                <div class="custom-wish-title">🎁 Wunschbox (Sonderbestellung)</div>
+                <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 12px;">
+                    Dein Wunsch-Item ist nicht im Shop? Trage es hier ein & sag uns, was du zahlst!
+                </p>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                    <input type="text" id="wish-item-name" placeholder="z. B. 1x Beacon / 64x Schwämme">
+                    <input type="number" id="wish-item-price" placeholder="Preis (Dias)" min="1">
+                </div>
+                <button class="btn btn-wish" style="margin-top: 10px; width: 100%;" onclick="addWishToCart()">+ Wunsch in Warenkorb legen</button>
+            </div>
         </div>
 
-        <!-- Warenkorb & Checkout -->
+        <!-- Rechts: Warenkorb & Checkout -->
         <div class="cart-box">
             <div class="cart-title">🛒 Warenkorb</div>
             <div id="cart-list">
@@ -177,8 +212,8 @@
                 <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Koordinaten (Base/Kiste) *</label>
                 <input type="text" id="player-coords" required placeholder="X: 100, Y: 64, Z: -250">
 
-                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Wunschbox / Notiz an Lieferant</label>
-                <textarea id="player-notes" rows="2" placeholder="z.B. Kiste steht links neben dem Tor oder Extrawünsche"></textarea>
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Notiz an Lieferant</label>
+                <textarea id="player-notes" rows="2" placeholder="z.B. Kiste steht links neben dem Tor"></textarea>
 
                 <button type="submit" class="btn btn-submit">Bestellung Abschicken 🚀</button>
             </form>
@@ -229,6 +264,35 @@
         updateCartUI();
     }
 
+    // Wunschbox-Item hinzufügen
+    function addWishToCart() {
+        const nameInput = document.getElementById('wish-item-name');
+        const priceInput = document.getElementById('wish-item-price');
+
+        const wishName = nameInput.value.trim();
+        const wishPrice = parseInt(priceInput.value);
+
+        if (!wishName) {
+            alert("Bitte gib den Namen deines Wunsch-Items ein!");
+            return;
+        }
+        if (isNaN(wishPrice) || wishPrice <= 0) {
+            alert("Bitte gib einen gültigen Preis in Diamanten ein!");
+            return;
+        }
+
+        cart.push({
+            id: 'wish-' + Date.now(),
+            name: `🎁 [Wunsch] ${wishName}`,
+            price: wishPrice,
+            amount: 1
+        });
+
+        nameInput.value = '';
+        priceInput.value = '';
+        updateCartUI();
+    }
+
     function updateCartUI() {
         const cartContainer = document.getElementById('cart-list');
         const totalContainer = document.getElementById('total-price');
@@ -240,7 +304,7 @@
         }
 
         let total = 0;
-        cartContainer.innerHTML = cart.map(item => {
+        cartContainer.innerHTML = cart.map((item, index) => {
             const itemTotal = item.price * item.amount;
             total += itemTotal;
             return `
@@ -298,7 +362,7 @@
                 { name: "👤 Spieler", value: order.player, inline: true },
                 { name: "💎 Gesamtpreis", value: `${order.totalPrice} Diamanten`, inline: true },
                 { name: "📍 Koordinaten", value: order.coords, inline: false },
-                { name: "📝 Wunschbox / Notiz", value: order.notes, inline: false },
+                { name: "📝 Notiz", value: order.notes, inline: false },
                 { name: "📦 Bestellte Items", value: itemList, inline: false }
             ],
             footer: { text: `Bestell-ID: ${order.id} | ${order.date}` }
