@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CA14 - Admin Dashboard</title>
+    <title>Admin Dashboard - CA14 Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0a0c;
-            --card-bg: #14151a;
+            --bg-dark: #0f1015;
+            --card-bg: #181a20;
             --accent-diamond: #55ffff;
             --accent-green: #55ff55;
+            --accent-gold: #ffaa00;
             --accent-red: #ff5555;
+            --accent-purple: #dcb0ff;
             --text-light: #f0f0f0;
-            --border-pixel: #262833;
+            --border-pixel: #2a2d3d;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,82 +24,90 @@
             background-color: var(--bg-dark);
             color: var(--text-light);
             font-family: 'Inter', sans-serif;
-            padding: 25px;
+            padding: 20px;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
+            padding: 20px;
             background: var(--card-bg);
             border: 3px solid var(--border-pixel);
-            padding: 20px 25px;
             border-radius: 8px;
             margin-bottom: 25px;
         }
 
         h1 {
             font-family: 'Press Start 2P', cursive;
-            color: var(--accent-red);
-            font-size: 1.1rem;
+            color: var(--accent-gold);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .order-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-pixel);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-pixel);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .player-name {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: var(--accent-diamond);
+        }
+
+        .order-status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: #2a2c38;
+        }
+
+        .item-list {
+            background: #0f1015;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 0.9rem;
         }
 
         .btn {
             font-family: 'Press Start 2P', cursive;
-            font-size: 0.6rem;
-            padding: 10px 14px;
-            background: #2a2c38;
+            font-size: 0.55rem;
+            padding: 8px 12px;
             color: #fff;
-            border: 2px solid var(--border-pixel);
+            border: 1px solid var(--border-pixel);
             cursor: pointer;
             border-radius: 4px;
+            margin-right: 5px;
+            margin-top: 5px;
             transition: all 0.2s;
         }
 
-        .btn:hover { background: var(--accent-diamond); color: #000; }
-        .btn-success { background: #1e5a20; border-color: var(--accent-green); }
-        .btn-success:hover { background: var(--accent-green); color: #000; }
-        .btn-danger { background: #5a1e1e; border-color: var(--accent-red); color: #fff; }
-        .btn-danger:hover { background: var(--accent-red); color: #000; }
+        .btn-accept { background: #1e5a20; border-color: var(--accent-green); }
+        .btn-accept:hover { background: var(--accent-green); color: #000; }
 
-        .table-container {
-            background: var(--card-bg);
-            border: 2px solid var(--border-pixel);
-            border-radius: 8px;
-            overflow-x: auto;
-        }
+        .btn-reject { background: #5a1e1e; border-color: var(--accent-red); }
+        .btn-reject:hover { background: var(--accent-red); color: #000; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
+        .btn-price { background: #4a2168; border-color: var(--accent-purple); }
+        .btn-price:hover { background: var(--accent-purple); color: #000; }
 
-        th, td {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-pixel);
-            font-size: 0.9rem;
-        }
-
-        th {
-            background: #1c1e26;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 0.55rem;
-            color: var(--accent-diamond);
-        }
-
-        tr:hover { background: rgba(255,255,255,0.02); }
-
-        .badge {
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        .badge-pending { background: #664d03; color: #ffda6a; }
-        .badge-done { background: #0f5132; color: #75b798; }
+        .btn-delete { background: #333; }
+        .btn-delete:hover { background: #666; }
     </style>
 </head>
 <body>
@@ -105,145 +115,131 @@
 <div class="container">
     <header>
         <h1>👑 Admin Dashboard</h1>
-        <button class="btn" onclick="loadOrders()">🔄 Aktualisieren</button>
+        <p style="color: #aaa; margin-top: 5px;">Bestellungen verwalten, Wünsche anpassen & ablehnen</p>
+        <button class="btn btn-accept" style="margin-top: 15px;" onclick="loadOrders()">🔄 Liste Aktualisieren</button>
     </header>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Spieler / Zeit</th>
-                    <th>Items</th>
-                    <th>Gesamtpreis</th>
-                    <th>Koordinaten & Notiz</th>
-                    <th>Status</th>
-                    <th>Aktion</th>
-                </tr>
-            </thead>
-            <tbody id="admin-orders-list">
-                <tr><td colspan="6" style="text-align:center; color:#777; padding: 30px;">Lade Bestellungen aus der Cloud...</td></tr>
-            </tbody>
-        </table>
+    <div id="orders-container">
+        <p style="text-align: center; color: #777;">Lade Bestellungen aus der Cloud...</p>
     </div>
 </div>
 
 <script>
-    // TRAGE HIER DEINE DATEN EIN:
+    // CONFIG - TRAGE HIER DEINE EXAKTEN KEYS EIN!
     const BIN_ID = "6acc136bffd5d160536295cf";
     const API_KEY = "$2a$10$gtwk9wEsW0YPPH4mQ.1/r.7StzFKPdcbFXmCvTkCKc8h4I/DWMiHW";
 
+    let allOrders = [];
+
     async function loadOrders() {
-        const tbody = document.getElementById('admin-orders-list');
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#777; padding: 30px;">Lade...</td></tr>`;
+        const container = document.getElementById('orders-container');
+        container.innerHTML = `<p style="text-align: center; color: #777;">Lade Daten...</p>`;
+
+        if (!BIN_ID || BIN_ID.includes("DEINE_BIN")) {
+            container.innerHTML = `<p style="color:red; text-align:center;">Bitte trage zuerst deine BIN_ID und API_KEY im Code ein!</p>`;
+            return;
+        }
 
         try {
             let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { 'X-Master-Key': API_KEY }
             });
             let data = await res.json();
-            
-            // Daten aus JSONBin sicher extrahieren
-            let orders = [];
-            if (data.record) {
-                orders = Array.isArray(data.record) ? data.record : [data.record];
-            } else if (Array.isArray(data)) {
-                orders = data;
-            }
+            allOrders = Array.isArray(data.record) ? data.record : [];
 
-            tbody.innerHTML = '';
-
-            if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#777; padding: 30px;">Keine Bestellungen vorhanden.</td></tr>`;
-                return;
-            }
-
-            orders.slice().reverse().forEach((order, index) => {
-                const realIndex = orders.length - 1 - index;
-                const isDone = order.status === "Geliefert";
-
-                const itemsHtml = order.cartItems 
-                    ? order.cartItems.map(i => `• <b>${i.amount}x</b> ${i.name}`).join('<br>')
-                    : `<b>${order.amount || 1}x</b> ${order.item || 'Item'}`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>
-                            <strong>${order.player || 'Unbekannt'}</strong><br>
-                            <small style="color:#888;">${order.date || 'Gerade eben'}</small>
-                        </td>
-                        <td>${itemsHtml}</td>
-                        <td style="color: var(--accent-diamond); font-weight: bold;">💎 ${order.totalPrice || 0} Dias</td>
-                        <td>
-                            📍 <code style="background:#1c1e26; padding:2px 6px; border-radius:4px; color:#ff55ff;">${order.coords || 'Keine'}</code><br>
-                            <small style="color:#aaa;">📝 ${order.notes || 'Keine'}</small>
-                        </td>
-                        <td>
-                            <span class="badge ${isDone ? 'badge-done' : 'badge-pending'}">${order.status || 'Offen'}</span>
-                        </td>
-                        <td>
-                            ${!isDone ? `<button class="btn btn-success" onclick="markDelivered(${realIndex})">Ausliefern ✅</button>` : `<span style="color:#75b798; font-weight:bold;">Erledigt ✅</span>`}
-                            <button class="btn btn-danger" style="margin-left: 5px;" onclick="deleteOrder(${realIndex})">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-            });
+            renderOrders();
         } catch (err) {
-            console.error(err);
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding: 30px;">Fehler beim Laden! Prüfe deine BIN_ID und API_KEY im Code.</td></tr>`;
+            console.error("Fehler beim Laden:", err);
+            container.innerHTML = `<p style="color:red; text-align:center;">Fehler beim Laden der Daten aus JSONBin!</p>`;
         }
     }
 
-    async function markDelivered(index) {
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
+    function renderOrders() {
+        const container = document.getElementById('orders-container');
+
+        if (allOrders.length === 0) {
+            container.innerHTML = `<p style="text-align: center; color: #777; padding: 40px;">Keine Bestellungen vorhanden.</p>`;
+            return;
+        }
+
+        // Neueste Bestellungen zuerst
+        const sorted = [...allOrders].reverse();
+
+        container.innerHTML = sorted.map(order => {
+            const itemsHtml = order.cartItems.map(i => `• <b>${i.amount}x</b> ${i.customName || i.name} <span style="color:#55ffff;">(${i.price})</span>`).join('<br>');
+
+            return `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span class="player-name">👤 ${order.player}</span>
+                        <span class="order-status">${order.status || 'Offen ⏳'}</span>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: #aaa;"><b>📍 Koordinaten:</b> ${order.coords}</p>
+                    <p style="font-size: 0.85rem; color: #aaa; margin-top: 4px;"><b>📝 Notiz:</b> ${order.notes}</p>
+                    <p style="font-size: 0.75rem; color: #666; margin-top: 4px;"><b>📅 Datum/ID:</b> ${order.date} (${order.id})</p>
+
+                    <div class="item-list">
+                        <b>📦 Bestellte Items / Wünsche:</b><br>
+                        ${itemsHtml}
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-accept" onclick="updateOrderStatus(${order.id}, 'Geliefert ✅')">✅ Geliefert</button>
+                        <button class="btn btn-price" onclick="adjustWishPrice(${order.id})">✏️ Preis anpassen</button>
+                        <button class="btn btn-reject" onclick="updateOrderStatus(${order.id}, 'Abgelehnt ❌')">❌ Ablehnen</button>
+                        <button class="btn btn-delete" onclick="deleteOrder(${order.id})">🗑️ Löschen</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+        let order = allOrders.find(o => o.id === orderId);
+        if (order) {
+            order.status = newStatus;
+            await saveToCloud();
+            renderOrders();
+        }
+    }
+
+    async function adjustWishPrice(orderId) {
+        let order = allOrders.find(o => o.id === orderId);
+        if (!order) return;
+
+        let newPrice = prompt("Gib den neuen Preis/Währung für die Wünsche dieser Bestellung ein (z.B. 3 Dias / 5x Eisen):");
+        if (newPrice) {
+            order.cartItems.forEach(item => {
+                item.price = newPrice;
             });
-            let data = await res.json();
-            let orders = data.record || data;
-            if (!Array.isArray(orders)) orders = [orders];
+            await saveToCloud();
+            renderOrders();
+            alert("Preis wurde erfolgreich aktualisiert!");
+        }
+    }
 
-            orders[index].status = "Geliefert";
+    async function deleteOrder(orderId) {
+        if (confirm("Möchtest du diese Bestellung wirklich löschen?")) {
+            allOrders = allOrders.filter(o => o.id !== orderId);
+            await saveToCloud();
+            renderOrders();
+        }
+    }
 
+    async function saveToCloud() {
+        try {
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Master-Key': API_KEY
                 },
-                body: JSON.stringify(orders)
+                body: JSON.stringify(allOrders)
             });
-
-            loadOrders();
         } catch (err) {
-            alert("Fehler beim Aktualisieren!");
-        }
-    }
-
-    async function deleteOrder(index) {
-        if (!confirm("Bestellung wirklich löschen?")) return;
-
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
-            let data = await res.json();
-            let orders = data.record || data;
-            if (!Array.isArray(orders)) orders = [orders];
-
-            orders.splice(index, 1);
-
-            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
-                },
-                body: JSON.stringify(orders)
-            });
-
-            loadOrders();
-        } catch (err) {
-            alert("Fehler beim Löschen!");
+            console.error("Fehler beim Speichern:", err);
+            alert("Fehler beim Speichern in der Cloud!");
         }
     }
 
