@@ -319,8 +319,9 @@
                 <label style="font-size: 0.8rem; color: #aaa;">Minecraft Name *</label>
                 <input type="text" id="player-name" required placeholder="z.B. Steve">
 
-                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Discord Name / Tag *</label>
-                <input type="text" id="discord-name" required placeholder="z.B. gamer123 (für Liefer-Ping)">
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Discord Name oder User-ID *</label>
+                <input type="text" id="discord-name" required placeholder="z.B. Affigemuse oder 1234567890...">
+                <small style="color: #666; font-size:0.7rem; display:block; margin-top:2px;">Tipp: Discord-ID eintragen für roten Benachrichtigungs-Ping!</small>
 
                 <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Koordinaten (Base/Kiste) *</label>
                 <input type="text" id="player-coords" required placeholder="X: 100, Y: 64, Z: -250">
@@ -636,7 +637,7 @@
             color: 5570559,
             fields: [
                 { name: "👤 Spieler", value: order.player, inline: true },
-                { name: "💬 Discord Tag", value: `@${order.discord}`, inline: true },
+                { name: "💬 Discord Tag/ID", value: `${order.discord}`, inline: true },
                 { name: "📍 Koordinaten", value: order.coords, inline: false },
                 { name: "📝 Notiz", value: order.notes, inline: false },
                 { name: "🔒 Paket-Inhalt", value: "||Geheim! Nur im Admin-Dashboard einsehbar.||", inline: false }
@@ -648,7 +649,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                content: `🔔 Neue Bestellung von **${order.player}** (@${order.discord})!`,
+                content: `🔔 Neue Bestellung von **${order.player}** (${order.discord})!`,
                 embeds: [embed] 
             })
         }).catch(err => console.error(err));
