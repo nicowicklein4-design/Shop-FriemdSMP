@@ -46,6 +46,38 @@
             margin-bottom: 10px;
         }
 
+        /* Live Tracker Box */
+        .status-tracker-box {
+            background: #151821;
+            border: 2px solid var(--accent-diamond);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .tracker-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.85rem;
+            color: var(--accent-diamond);
+            margin-bottom: 10px;
+        }
+
+        .tracker-results {
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .tracker-order-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-pixel);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .filter-section {
             background: var(--card-bg);
             border: 2px solid var(--border-pixel);
@@ -223,8 +255,19 @@
 <div class="container">
     <header>
         <h1>💎 CA14 Item Shop</h1>
-        <p style="color: #aaa; margin-top: 5px;">Rezeptgetreue Preise, genaue Verzauberungen & Wunschbox!</p>
+        <p style="color: #aaa; margin-top: 5px;">Anonyme Bestellungen, Verzauberungen & Live-Tracking!</p>
     </header>
+
+    <!-- LIVE BESTELLUNGS-TRACKER -->
+    <div class="status-tracker-box">
+        <div class="tracker-title">🔍 Bestellstatus prüfen</div>
+        <p style="color: #aaa; font-size: 0.8rem; margin-bottom: 8px;">Gib deinen Minecraft-Namen ein, um zu sehen, ob deine Bestellung geliefert wurde:</p>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="track-player-name" placeholder="Dein Minecraft-Name..." style="margin-top:0;">
+            <button class="btn" onclick="checkOrderStatus()">Prüfen 🔎</button>
+        </div>
+        <div id="tracker-results" class="tracker-results"></div>
+    </div>
 
     <div class="shop-layout">
         <div>
@@ -276,6 +319,9 @@
                 <label style="font-size: 0.8rem; color: #aaa;">Minecraft Name *</label>
                 <input type="text" id="player-name" required placeholder="z.B. Steve">
 
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Discord Name / Tag *</label>
+                <input type="text" id="discord-name" required placeholder="z.B. gamer123 (für Liefer-Ping)">
+
                 <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Koordinaten (Base/Kiste) *</label>
                 <input type="text" id="player-coords" required placeholder="X: 100, Y: 64, Z: -250">
 
@@ -297,7 +343,6 @@
     let currentCategory = "Alle";
     let cart = [];
 
-    // Gibt passgenaue Verzauberungen laut Minecraft-Wiki aus
     function getEnchantOptions(itemName) {
         const name = itemName.toLowerCase();
         
@@ -518,12 +563,14 @@
         }
 
         const player = document.getElementById('player-name').value;
+        const discord = document.getElementById('discord-name').value;
         const coords = document.getElementById('player-coords').value;
         const notes = document.getElementById('player-notes').value || "Keine";
 
         const orderData = {
             id: Date.now(),
             player: player,
+            discord: discord,
             coords: coords,
             notes: notes,
             cartItems: cart,
@@ -534,24 +581,65 @@
         sendDiscordWebhook(orderData);
         await sendToCloud(orderData);
 
-        alert("Danke für deine Bestellung!");
+        alert("Danke für deine Bestellung! Sie wurde geheim übermittelt.");
         cart = [];
         document.getElementById('order-form').reset();
         updateCartUI();
     }
 
+    async function checkOrderStatus() {
+        const nameInput = document.getElementById('track-player-name').value.trim().toLowerCase();
+        const resultsBox = document.getElementById('tracker-results');
+
+        if (!nameInput) {
+            alert("Bitte gib deinen Minecraft-Namen ein!");
+            return;
+        }
+
+        resultsBox.innerHTML = "<p style='color:#aaa;'>Lade Status...</p>";
+
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let data = await res.json();
+            let orders = Array.isArray(data.record) ? data.record : [];
+
+            let myOrders = orders.filter(o => o.player.toLowerCase() === nameInput);
+
+            if (myOrders.length === 0) {
+                resultsBox.innerHTML = "<p style='color:#ff5555;'>Keine Bestellung unter diesem Namen gefunden.</p>";
+                return;
+            }
+
+            resultsBox.innerHTML = myOrders.reverse().map(o => `
+                <div class="tracker-order-item">
+                    <div>
+                        <b>Bestellung vom ${o.date}</b><br>
+                        <small style="color:#aaa;">Anzahl Positionen: ${o.cartItems.length}</small>
+                    </div>
+                    <div style="font-weight:bold; color: var(--accent-diamond);">${o.status || 'Offen ⏳'}</div>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error(err);
+            resultsBox.innerHTML = "<p style='color:#ff5555;'>Fehler beim Abrufen der Bestellungen.</p>";
+        }
+    }
+
+    // DISCORD WEBHOOK (GEHEIM - KEINE ITEMS MEHR IM DISCORD!)
     function sendDiscordWebhook(order) {
         if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("DEIN_DISCORD")) return;
-        const itemList = order.cartItems.map(i => `• **${i.amount}x** ${i.customName || i.name} (${i.price})`).join('\n');
         
         const embed = {
-            title: "🛒 Neue Bestellung eingegangen!",
+            title: "🛒 Neue Bestellung eingegangen (Geheim)",
             color: 5570559,
             fields: [
                 { name: "👤 Spieler", value: order.player, inline: true },
+                { name: "💬 Discord Tag", value: `@${order.discord}`, inline: true },
                 { name: "📍 Koordinaten", value: order.coords, inline: false },
                 { name: "📝 Notiz", value: order.notes, inline: false },
-                { name: "📦 Bestelle Items", value: itemList, inline: false }
+                { name: "🔒 Paket-Inhalt", value: "||Geheim! Nur im Admin-Dashboard einsehbar.||", inline: false }
             ],
             footer: { text: `Bestell-ID: ${order.id} | ${order.date}` }
         };
@@ -559,7 +647,10 @@
         fetch(DISCORD_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ embeds: [embed] })
+            body: JSON.stringify({ 
+                content: `🔔 Neue Bestellung von **${order.player}** (@${order.discord})!`,
+                embeds: [embed] 
+            })
         }).catch(err => console.error(err));
     }
 
