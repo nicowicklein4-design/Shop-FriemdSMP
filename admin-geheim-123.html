@@ -193,7 +193,7 @@
         }).join('');
     }
 
-    async function markAsDelivered(orderId) {
+ async function markAsDelivered(orderId) {
         let order = allOrders.find(o => o.id === orderId);
         if (!order) return;
 
@@ -203,20 +203,20 @@
 
         if (DISCORD_WEBHOOK_URL && !DISCORD_WEBHOOK_URL.includes("HIER_")) {
             let rawDiscord = (order.discord || "").trim().replace("@", "");
-            let pingMention = /^\d{17,20}$/.test(rawDiscord) ? `<@${rawDiscord}>` : `**@${rawDiscord || order.player}**`;
+            let pingMention = /^\d{17,20}$/.test(rawDiscord) ? `<@${rawDiscord}>` : (rawDiscord ? `**@${rawDiscord}**` : `**@${order.player}**`);
+            let coordsText = order.coords || "deinen Koordinaten";
 
             fetch(DISCORD_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    content: `📦 **Lieferung abgeschlossen!**\nHey ${pingMention}, deine Bestellung wurde bei **${order.coords}** geliefert! 🎉`,
+                    content: `📦 **Lieferung abgeschlossen!**\nHey ${pingMention}, deine Bestellung wurde bei **${coordsText}** geliefert! 🎉`,
                     allowed_mentions: { parse: ["users", "roles"] }
                 })
             }).catch(err => console.error(err));
         }
         alert("Bestellung geliefert & Ping gesendet!");
     }
-
     async function updateOrderStatus(orderId, newStatus) {
         let order = allOrders.find(o => o.id === orderId);
         if (order) {
