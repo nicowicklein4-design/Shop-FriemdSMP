@@ -114,8 +114,8 @@
 
 <div class="container">
     <header>
-        <h1>👑 Admin Dashboard</h1>
-        <p style="color: #aaa; margin-top: 5px;">Bestellungen verwalten, Wünsche anpassen & ablehnen</p>
+        <h1>👑 Admin Dashboard (Streng Geheim)</h1>
+        <p style="color: #aaa; margin-top: 5px;">Bestellungen verwalten, Wünsche anpassen & anonym ausliefern</p>
         <button class="btn btn-accept" style="margin-top: 15px;" onclick="loadOrders()">🔄 Liste Aktualisieren</button>
     </header>
 
@@ -125,7 +125,7 @@
 </div>
 
 <script>
-    // CONFIG - TRAGE HIER DEINE EXAKTEN KEYS EIN!
+    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1558967810447646780/4ZCgL92Nrg6pBzTpd1Z5kc7p2vZ7rHqBEyNbN5aO3CChpzRxeKTucd7pyY0PMELTMylu";
     const BIN_ID = "6acc136bffd5d160536295cf";
     const API_KEY = "$2a$10$gtwk9wEsW0YPPH4mQ.1/r.7StzFKPdcbFXmCvTkCKc8h4I/DWMiHW";
 
@@ -162,7 +162,6 @@
             return;
         }
 
-        // Neueste Bestellungen zuerst anzeigen
         const sorted = [...allOrders].reverse();
 
         container.innerHTML = sorted.map(order => {
@@ -171,7 +170,7 @@
             return `
                 <div class="order-card">
                     <div class="order-header">
-                        <span class="player-name">👤 ${order.player}</span>
+                        <span class="player-name">👤 ${order.player} (@${order.discord || 'Kein Tag'})</span>
                         <span class="order-status">${order.status || 'Offen ⏳'}</span>
                     </div>
 
@@ -180,12 +179,12 @@
                     <p style="font-size: 0.75rem; color: #666; margin-top: 4px;"><b>📅 Datum/ID:</b> ${order.date} (${order.id})</p>
 
                     <div class="item-list">
-                        <b>📦 Bestellte Items / Wünsche:</b><br>
+                        <b>🔒 Geheime Bestell-Liste (Nur für dich sichtbar):</b><br>
                         ${itemsHtml}
                     </div>
 
                     <div style="margin-top: 15px;">
-                        <button class="btn btn-accept" onclick="updateOrderStatus(${order.id}, 'Geliefert ✅')">✅ Geliefert</button>
+                        <button class="btn btn-accept" onclick="markAsDelivered(${order.id})">✅ Geliefert & Ping senden</button>
                         <button class="btn btn-price" onclick="adjustWishPrice(${order.id})">✏️ Preis anpassen</button>
                         <button class="btn btn-reject" onclick="updateOrderStatus(${order.id}, 'Abgelehnt ❌')">❌ Ablehnen</button>
                         <button class="btn btn-delete" onclick="deleteOrder(${order.id})">🗑️ Löschen</button>
@@ -195,56 +194,70 @@
         }).join('');
     }
 
-    // Ändert den Status einer Bestellung (z.B. Abgelehnt ❌ oder Geliefert ✅)
+    async function markAsDelivered(orderId) {
+        let order = allOrders.find(o => o.id === orderId);
+        if (!order) return;
+
+        order.status = "Geliefert ✅";
+        await saveToCloud();
+        renderOrders();
+
+        // Discord Ping ohne Item-Inhalt senden
+        if (DISCORD_WEBHOOK_URL && !DISCORD_WEBHOOK_URL.includes("DEIN_DISCORD")) {
+            const pingText = order.discord ? `@${order.discord}` : order.player;
+            
+            fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    content: `📦 **Lieferung abgeschlossen!**\nHey ${pingText}, deine Bestellung wurde erfolgreich bei deinen Koordinaten **${order.coords}** geliefert! Viel Spaß damit! 🎉` 
+                })
+            }).catch(err => console.error(err));
+        }
+
+        alert(`Bestellung als geliefert markiert und geheimer Ping an @${order.discord} gesendet!`);
+    }
+
     async function updateOrderStatus(orderId, newStatus) {
         let order = allOrders.find(o => o.id === orderId);
         if (order) {
             order.status = newStatus;
             await saveToCloud();
             renderOrders();
-            alert(`Bestellungs-Status geändert zu: ${newStatus}`);
+            alert(`Status geändert zu: ${newStatus}`);
         }
     }
 
-    // Erlaubt das Ändern von Wunsch-Preisen
     async function adjustWishPrice(orderId) {
         let order = allOrders.find(o => o.id === orderId);
         if (!order) return;
 
-        let newPrice = prompt("Gib den neuen Preis/Währung für die Wünsche dieser Bestellung ein (z.B. 3 Diamonds / 5x Iron Ingot):");
+        let newPrice = prompt("Gib den neuen Preis/Währung für die Wünsche dieser Bestellung ein:");
         if (newPrice) {
-            order.cartItems.forEach(item => {
-                item.price = newPrice;
-            });
+            order.cartItems.forEach(item => { item.price = newPrice; });
             await saveToCloud();
             renderOrders();
-            alert("Preis wurde erfolgreich aktualisiert!");
+            alert("Preis wurde aktualisiert!");
         }
     }
 
-    // Löscht eine Bestellung aus der Cloud
     async function deleteOrder(orderId) {
-        if (confirm("Möchtest du diese Bestellung wirklich unwiderruflich löschen?")) {
+        if (confirm("Möchtest du diese Bestellung wirklich löschen?")) {
             allOrders = allOrders.filter(o => o.id !== orderId);
             await saveToCloud();
             renderOrders();
         }
     }
 
-    // Speichert den aktuellen Zustand zurück in deine JSONBin Cloud
     async function saveToCloud() {
         try {
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
-                },
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
                 body: JSON.stringify(allOrders)
             });
         } catch (err) {
-            console.error("Fehler beim Speichern:", err);
-            alert("Fehler beim Speichern in der Cloud!");
+            console.error(err);
         }
     }
 
