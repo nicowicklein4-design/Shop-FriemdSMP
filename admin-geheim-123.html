@@ -261,12 +261,26 @@
         }
     }
 
-    async function saveToCloud() {
-        try {
-            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(allOrders)
+async function saveToCloud() {
+    try {
+        let putRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'X-Master-Key': API_KEY 
+            },
+            body: JSON.stringify(allOrders)
+        });
+
+        if (!putRes.ok) {
+            let errText = await putRes.text();
+            console.error("Speichern fehlgeschlagen Status:", putRes.status, errText);
+            alert("Fehler beim Speichern in der Cloud (Status " + putRes.status + ")");
+        }
+    } catch (err) {
+        console.error("Netzwerk-/Cloud-Fehler:", err);
+    }
+}
             });
         } catch (err) {
             console.error(err);
