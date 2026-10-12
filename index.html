@@ -673,7 +673,7 @@
         }).catch(err => console.error(err));
     }
 
-    async function sendToCloud(orderData) {
+async function sendToCloud(orderData) {
     if (!BIN_ID || BIN_ID.includes("DEINE_BIN")) return;
     try {
         // 1. Neueste Bestellungen abrufen
@@ -707,11 +707,6 @@
         console.error("Cloud Fehler:", err);
     }
 }
-            });
-        } catch (err) {
-            console.error("Cloud Fehler:", err);
-        }
-    }
 
     loadProducts();
 </script>
