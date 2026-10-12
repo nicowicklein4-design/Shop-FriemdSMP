@@ -126,7 +126,7 @@
 
 <script>
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1558967810447646780/4ZCgL92Nrg6pBzTpd1Z5kc7p2vZ7rHqBEyNbN5aO3CChpzRxeKTucd7pyY0PMELTMylu";
-    const BIN_ID = "6acc136bffd5d160536295cf ";
+    const BIN_ID = "6acc136bffd5d160536295cf";
     const API_KEY = "$2a$10$gtwk9wEsW0YPPH4mQ.1/r.7StzFKPdcbFXmCvTkCKc8h4I/DWMiHW";
 
     let allOrders = [];
@@ -253,7 +253,9 @@
                 headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
                 body: JSON.stringify(allOrders)
             });
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error(err); 
+        }
     }
 
     loadOrders();
