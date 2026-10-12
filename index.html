@@ -46,7 +46,6 @@
             margin-bottom: 10px;
         }
 
-        /* Live Tracker Box */
         .status-tracker-box {
             background: #151821;
             border: 2px solid var(--accent-diamond);
@@ -255,13 +254,12 @@
 <div class="container">
     <header>
         <h1>💎 CA14 Item Shop</h1>
-        <p style="color: #aaa; margin-top: 5px;">Anonyme Bestellungen, Verzauberungen & Live-Tracking!</p>
+        <p style="color: #aaa; margin-top: 5px;">Sicher, Schnell & Geheim!</p>
     </header>
 
-    <!-- LIVE BESTELLUNGS-TRACKER -->
     <div class="status-tracker-box">
         <div class="tracker-title">🔍 Bestellstatus prüfen</div>
-        <p style="color: #aaa; font-size: 0.8rem; margin-bottom: 8px;">Gib deinen Minecraft-Namen ein, um zu sehen, ob deine Bestellung geliefert wurde:</p>
+        <p style="color: #aaa; font-size: 0.8rem; margin-bottom: 8px;">Gib deinen Minecraft-Namen ein:</p>
         <div style="display: flex; gap: 10px;">
             <input type="text" id="track-player-name" placeholder="Dein Minecraft-Name..." style="margin-top:0;">
             <button class="btn" onclick="checkOrderStatus()">Prüfen 🔎</button>
@@ -272,7 +270,7 @@
     <div class="shop-layout">
         <div>
             <div class="filter-section">
-                <input type="text" id="search-input" placeholder="🔍 Item suchen (English Name)..." oninput="filterProducts()">
+                <input type="text" id="search-input" placeholder="🔍 Item suchen..." oninput="filterProducts()">
                 <div class="category-buttons" id="cat-buttons">
                     <button class="btn-cat active" onclick="setCategory('Alle', this)">Alle</button>
                     <button class="btn-cat" onclick="setCategory('Wünsche', this)">🎁 Wünsche</button>
@@ -293,43 +291,37 @@
             </div>
 
             <div class="custom-wish-card">
-                <div class="custom-wish-title">🎁 Wunschbox (Submit Wish)</div>
-                <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 12px;">
-                    Item nicht im Shop? Trage Name & Währung (z.B. 2x Coal / 1x Iron Ingot / 1x Diamond) ein!
-                </p>
+                <div class="custom-wish-title">🎁 Wunschbox</div>
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-                    <input type="text" id="wish-item-name" placeholder="z. B. Beacon / Nether Star">
-                    <input type="text" id="wish-item-price" placeholder="Preis (z.B. 5 Diamonds)">
+                    <input type="text" id="wish-item-name" placeholder="Item Name">
+                    <input type="text" id="wish-item-price" placeholder="Preis">
                 </div>
-                <button class="btn btn-wish" style="margin-top: 10px; width: 100%;" onclick="submitWish()">+ Wunsch abschicken & in Shop legen</button>
+                <button class="btn btn-wish" style="margin-top: 10px; width: 100%;" onclick="submitWish()">+ Wunsch abschicken</button>
             </div>
         </div>
 
         <div class="cart-box">
             <div class="cart-title">🛒 Warenkorb</div>
             <div id="cart-list">
-                <p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist noch leer.</p>
+                <p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist leer.</p>
             </div>
 
-            <div class="total-price-box" id="total-price">
-                Gesamtsumme: 0 Items
-            </div>
+            <div class="total-price-box" id="total-price">Gesamtsumme: 0 Items</div>
 
             <form id="order-form" style="margin-top: 20px;" onsubmit="handleOrder(event)">
                 <label style="font-size: 0.8rem; color: #aaa;">Minecraft Name *</label>
-                <input type="text" id="player-name" required placeholder="z.B. Steve">
+                <input type="text" id="player-name" required placeholder="Steve">
 
-                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Discord Name oder User-ID *</label>
-                <input type="text" id="discord-name" required placeholder="z.B. Affigemuse oder 1234567890...">
-                <small style="color: #666; font-size:0.7rem; display:block; margin-top:2px;">Tipp: Discord-ID eintragen für roten Benachrichtigungs-Ping!</small>
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Discord Tag *</label>
+                <input type="text" id="discord-name" required placeholder="Affigemuse">
 
-                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Koordinaten (Base/Kiste) *</label>
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Koordinaten *</label>
                 <input type="text" id="player-coords" required placeholder="X: 100, Y: 64, Z: -250">
 
-                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Notiz an Lieferant</label>
-                <textarea id="player-notes" rows="2" placeholder="z.B. Kiste steht links neben dem Tor"></textarea>
+                <label style="font-size: 0.8rem; color: #aaa; margin-top: 10px; display:block;">Notiz</label>
+                <textarea id="player-notes" rows="2" placeholder="optional"></textarea>
 
-                <button type="submit" class="btn btn-submit">Bestellung Abschicken 🚀</button>
+                <button type="submit" class="btn btn-submit">Bestellen 🚀</button>
             </form>
         </div>
     </div>
@@ -337,7 +329,7 @@
 
 <script>
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1558967810447646780/4ZCgL92Nrg6pBzTpd1Z5kc7p2vZ7rHqBEyNbN5aO3CChpzRxeKTucd7pyY0PMELTMylu";
-    const BIN_ID = "6acc136bffd5d160536295cf";
+    const BIN_ID = "6acc136bffd5d160536295cf ";
     const API_KEY = "$2a$10$gtwk9wEsW0YPPH4mQ.1/r.7StzFKPdcbFXmCvTkCKc8h4I/DWMiHW";
 
     let products = [];
@@ -346,47 +338,14 @@
 
     function getEnchantOptions(itemName) {
         const name = itemName.toLowerCase();
-        
         if (name.includes('helmet')) {
-            return `
-                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
-                <option value="Protection IV (+2 Dias)">Protection IV (+2 Dias)</option>
-                <option value="Respiration III (+1 Dia)">Respiration III (+1 Dia)</option>
-                <option value="Aqua Affinity (+1 Dia)">Aqua Affinity (+1 Dia)</option>
-                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
-                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
-            `;
+            return `<option value="Ohne Verzauberung">Ohne Verzauberung</option><option value="Protection IV (+2 Dias)">Protection IV (+2 Dias)</option><option value="Mending (+1 Dia)">Mending (+1 Dia)</option>`;
         } else if (name.includes('chestplate') || name.includes('leggings') || name.includes('boots')) {
-            return `
-                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
-                <option value="Protection IV (+2 Dias)">Protection IV (+2 Dias)</option>
-                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
-                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
-            `;
+            return `<option value="Ohne Verzauberung">Ohne Verzauberung</option><option value="Protection IV (+2 Dias)">Protection IV (+2 Dias)</option><option value="Mending (+1 Dia)">Mending (+1 Dia)</option>`;
         } else if (name.includes('sword')) {
-            return `
-                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
-                <option value="Sharpness V (+2 Dias)">Sharpness V (+2 Dias)</option>
-                <option value="Looting III (+2 Dias)">Looting III (+2 Dias)</option>
-                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
-                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
-            `;
+            return `<option value="Ohne Verzauberung">Ohne Verzauberung</option><option value="Sharpness V (+2 Dias)">Sharpness V (+2 Dias)</option><option value="Mending (+1 Dia)">Mending (+1 Dia)</option>`;
         } else if (name.includes('pickaxe') || name.includes('axe') || name.includes('shovel')) {
-            return `
-                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
-                <option value="Efficiency V (+2 Dias)">Efficiency V (+2 Dias)</option>
-                <option value="Fortune III (+2 Dias)">Fortune III (+2 Dias)</option>
-                <option value="Silk Touch (+2 Dias)">Silk Touch (+2 Dias)</option>
-                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
-                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
-            `;
-        } else if (name.includes('bow') || name.includes('crossbow')) {
-            return `
-                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
-                <option value="Power V (+2 Dias)">Power V (+2 Dias)</option>
-                <option value="Infinity (+2 Dias)">Infinity (+2 Dias)</option>
-                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
-            `;
+            return `<option value="Ohne Verzauberung">Ohne Verzauberung</option><option value="Efficiency V (+2 Dias)">Efficiency V (+2 Dias)</option><option value="Fortune III (+2 Dias)">Fortune III (+2 Dias)</option>`;
         }
         return '';
     }
@@ -395,13 +354,12 @@
         try {
             let res = await fetch('items.json');
             products = await res.json();
-            
             let savedWishes = JSON.parse(localStorage.getItem('ca14_wishes') || '[]');
             products = [...savedWishes, ...products];
-
             renderProducts();
         } catch (err) {
             console.error("Fehler beim Laden:", err);
+            document.getElementById('items-container').innerHTML = `<p style="color:red; grid-column:1/-1; text-align:center;">Fehler beim Laden der items.json!</p>`;
         }
     }
 
@@ -444,9 +402,7 @@
         renderProducts();
     }
 
-    function filterProducts() {
-        renderProducts();
-    }
+    function filterProducts() { renderProducts(); }
 
     function addToCart(productId) {
         const item = products.find(p => p.id === productId);
@@ -479,14 +435,10 @@
     function submitWish() {
         const nameInput = document.getElementById('wish-item-name');
         const priceInput = document.getElementById('wish-item-price');
-
         const wishName = nameInput.value.trim();
         const wishPrice = priceInput.value.trim() || "1x Iron Ingot";
 
-        if (!wishName) {
-            alert("Bitte gib den Namen des Wunsch-Items ein!");
-            return;
-        }
+        if (!wishName) { alert("Bitte Namen eingeben!"); return; }
 
         const newWishItem = {
             id: 'wish-' + Date.now(),
@@ -496,20 +448,18 @@
         };
 
         products.unshift(newWishItem);
-
         let savedWishes = JSON.parse(localStorage.getItem('ca14_wishes') || '[]');
         savedWishes.push(newWishItem);
         localStorage.setItem('ca14_wishes', JSON.stringify(savedWishes));
 
         cart.push({ ...newWishItem, cartKey: newWishItem.id, customName: newWishItem.name, amount: 1 });
         updateCartUI();
-
         sendWishWebhook(newWishItem);
 
         nameInput.value = '';
         priceInput.value = '';
         setCategory('Wünsche', document.querySelector('.btn-cat:nth-child(2)'));
-        alert("Dein Wunsch wurde eingereicht und in deinen Warenkorb gelegt!");
+        alert("Wunsch eingereicht!");
     }
 
     function updateCartUI() {
@@ -517,7 +467,7 @@
         const totalContainer = document.getElementById('total-price');
 
         if (cart.length === 0) {
-            cartContainer.innerHTML = `<p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist noch leer.</p>`;
+            cartContainer.innerHTML = `<p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist leer.</p>`;
             totalContainer.innerHTML = "<b>Gesamtsumme:</b> 0 Items";
             return;
         }
@@ -528,7 +478,6 @@
 
         cartContainer.innerHTML = cart.map((item, index) => {
             totalItemsCount += item.amount;
-            
             if (item.price.includes("Diamond")) {
                 let num = parseInt(item.price) || 0;
                 totalDiamonds += (num * item.amount);
@@ -538,30 +487,21 @@
 
             return `
                 <div class="cart-item">
-                    <span><b>${item.amount}x</b> ${item.customName || item.name}<br><small style="color:#ffaa00;">Preis: ${item.price}</small></span>
+                    <span><b>${item.amount}x</b> ${item.customName || item.name}<br><small style="color:#ffaa00;">${item.price}</small></span>
                     <button class="btn btn-remove" onclick="removeFromCart(${index})">X</button>
                 </div>
             `;
         }).join('');
 
-        let totalText = `<b>Gesamtsumme:</b> ${totalItemsCount} Positionen<br>`;
-        if (totalDiamonds > 0) {
-            totalText += `<span style="color:#55ffff;">💎 ${totalDiamonds} Diamonds</span>`;
-        }
-        if (otherCosts.length > 0) {
-            if (totalDiamonds > 0) totalText += " + ";
-            totalText += `<small style="color:#ffaa00;">${otherCosts.join(" + ")}</small>`;
-        }
-
+        let totalText = `<b>Summe:</b> ${totalItemsCount} Items<br>`;
+        if (totalDiamonds > 0) totalText += `<span style="color:#55ffff;">💎 ${totalDiamonds} Dias</span>`;
+        if (otherCosts.length > 0) totalText += ` <small style="color:#ffaa00;">${otherCosts.join(" + ")}</small>`;
         totalContainer.innerHTML = totalText;
     }
 
     async function handleOrder(e) {
         e.preventDefault();
-        if (cart.length === 0) {
-            alert("Dein Warenkorb ist leer!");
-            return;
-        }
+        if (cart.length === 0) { alert("Warenkorb ist leer!"); return; }
 
         const player = document.getElementById('player-name').value;
         const discord = document.getElementById('discord-name').value;
@@ -570,10 +510,7 @@
 
         const orderData = {
             id: Date.now(),
-            player: player,
-            discord: discord,
-            coords: coords,
-            notes: notes,
+            player, discord, coords, notes,
             cartItems: cart,
             status: "Offen ⏳",
             date: new Date().toLocaleString("de-DE")
@@ -582,7 +519,7 @@
         sendDiscordWebhook(orderData);
         await sendToCloud(orderData);
 
-        alert("Danke für deine Bestellung! Sie wurde geheim übermittelt.");
+        alert("Bestellung erfolgreich abgeschickt!");
         cart = [];
         document.getElementById('order-form').reset();
         updateCartUI();
@@ -591,80 +528,58 @@
     async function checkOrderStatus() {
         const nameInput = document.getElementById('track-player-name').value.trim().toLowerCase();
         const resultsBox = document.getElementById('tracker-results');
+        if (!nameInput) { alert("Namen eingeben!"); return; }
 
-        if (!nameInput) {
-            alert("Bitte gib deinen Minecraft-Namen ein!");
-            return;
-        }
-
-        resultsBox.innerHTML = "<p style='color:#aaa;'>Lade Status...</p>";
-
+        resultsBox.innerHTML = "<p style='color:#aaa;'>Suche...</p>";
         try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Master-Key': API_KEY } });
             let data = await res.json();
             let orders = Array.isArray(data.record) ? data.record : [];
-
             let myOrders = orders.filter(o => o.player.toLowerCase() === nameInput);
 
             if (myOrders.length === 0) {
-                resultsBox.innerHTML = "<p style='color:#ff5555;'>Keine Bestellung unter diesem Namen gefunden.</p>";
+                resultsBox.innerHTML = "<p style='color:#ff5555;'>Keine Bestellung gefunden.</p>";
                 return;
             }
 
             resultsBox.innerHTML = myOrders.reverse().map(o => `
                 <div class="tracker-order-item">
-                    <div>
-                        <b>Bestellung vom ${o.date}</b><br>
-                        <small style="color:#aaa;">Anzahl Positionen: ${o.cartItems.length}</small>
-                    </div>
-                    <div style="font-weight:bold; color: var(--accent-diamond);">${o.status || 'Offen ⏳'}</div>
+                    <div><b>Vom ${o.date}</b> (${o.cartItems.length} Items)</div>
+                    <div style="font-weight:bold; color:var(--accent-diamond);">${o.status}</div>
                 </div>
             `).join('');
         } catch (err) {
-            console.error(err);
-            resultsBox.innerHTML = "<p style='color:#ff5555;'>Fehler beim Abrufen der Bestellungen.</p>";
+            resultsBox.innerHTML = "<p style='color:#ff5555;'>Fehler beim Laden.</p>";
         }
     }
 
-    // DISCORD WEBHOOK (GEHEIM - KEINE ITEMS MEHR IM DISCORD!)
     function sendDiscordWebhook(order) {
-        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("DEIN_DISCORD")) return;
-        
+        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("HIER_")) return;
         const embed = {
-            title: "🛒 Neue Bestellung eingegangen (Geheim)",
+            title: "🛒 Neue Bestellung (Geheim)",
             color: 5570559,
             fields: [
                 { name: "👤 Spieler", value: order.player, inline: true },
-                { name: "💬 Discord Tag/ID", value: `${order.discord}`, inline: true },
+                { name: "💬 Discord", value: order.discord, inline: true },
                 { name: "📍 Koordinaten", value: order.coords, inline: false },
                 { name: "📝 Notiz", value: order.notes, inline: false },
-                { name: "🔒 Paket-Inhalt", value: "||Geheim! Nur im Admin-Dashboard einsehbar.||", inline: false }
+                { name: "🔒 Inhalt", value: "||Nur im Admin-Dashboard sichtbar||", inline: false }
             ],
-            footer: { text: `Bestell-ID: ${order.id} | ${order.date}` }
+            footer: { text: `ID: ${order.id} | ${order.date}` }
         };
-
         fetch(DISCORD_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                content: `🔔 Neue Bestellung von **${order.player}** (${order.discord})!`,
-                embeds: [embed] 
-            })
+            body: JSON.stringify({ content: `🔔 Neue Bestellung von **${order.player}**!`, embeds: [embed] })
         }).catch(err => console.error(err));
     }
 
     function sendWishWebhook(wish) {
-        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("DEIN_DISCORD")) return;
+        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("HIER_")) return;
         const embed = {
-            title: "🎁 Neuer Wunsch im Shop eingereicht!",
+            title: "🎁 Neuer Wunsch!",
             color: 14487551,
-            fields: [
-                { name: "🎁 Wunsch-Item", value: wish.name, inline: true },
-                { name: "💰 Preis/Währung", value: String(wish.price), inline: true }
-            ],
-            footer: { text: `ID: ${wish.id}` }
+            fields: [{ name: "Item", value: wish.name, inline: true }, { name: "Preis", value: wish.price, inline: true }]
         };
         fetch(DISCORD_WEBHOOK_URL, {
             method: 'POST',
@@ -673,40 +588,23 @@
         }).catch(err => console.error(err));
     }
 
-async function sendToCloud(orderData) {
-    if (!BIN_ID || BIN_ID.includes("DEINE_BIN")) return;
-    try {
-        // 1. Neueste Bestellungen abrufen
-        let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-            headers: { 'X-Master-Key': API_KEY }
-        });
-        
-        let orders = [];
-        if (res.ok) {
-            let data = await res.json();
-            orders = Array.isArray(data.record) ? data.record : [];
-        }
-
-        // 2. Neue Bestellung anfügen
-        orders.push(orderData);
-
-        // 3. Aktualisiertes Array zurückschreiben
-        let putRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-            method: 'PUT',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'X-Master-Key': API_KEY 
-            },
-            body: JSON.stringify(orders)
-        });
-
-        if (!putRes.ok) {
-            console.error("JSONBin PUT-Fehler Status:", putRes.status);
-        }
-    } catch (err) {
-        console.error("Cloud Fehler:", err);
+    async function sendToCloud(orderData) {
+        if (!BIN_ID || BIN_ID.includes("HIER_")) return;
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Master-Key': API_KEY } });
+            let orders = [];
+            if (res.ok) {
+                let data = await res.json();
+                orders = Array.isArray(data.record) ? data.record : [];
+            }
+            orders.push(orderData);
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(orders)
+            });
+        } catch (err) { console.error(err); }
     }
-}
 
     loadProducts();
 </script>
