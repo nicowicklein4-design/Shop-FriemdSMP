@@ -223,7 +223,7 @@
 <div class="container">
     <header>
         <h1>💎 CA14 Item Shop</h1>
-        <p style="color: #aaa; margin-top: 5px;">Rezeptgetreue Preise, Verzauberungen & Wunschbox!</p>
+        <p style="color: #aaa; margin-top: 5px;">Rezeptgetreue Preise, genaue Verzauberungen & Wunschbox!</p>
     </header>
 
     <div class="shop-layout">
@@ -297,10 +297,52 @@
     let currentCategory = "Alle";
     let cart = [];
 
-    function isEnchantable(item) {
-        const name = item.name.toLowerCase();
-        const enchantKeywords = ['helmet', 'chestplate', 'leggings', 'boots', 'sword', 'pickaxe', 'axe', 'shovel', 'hoe', 'bow', 'crossbow', 'trident', 'elytra', 'shield'];
-        return enchantKeywords.some(keyword => name.includes(keyword));
+    // Gibt passgenaue Verzauberungen laut Minecraft-Wiki aus
+    function getEnchantOptions(itemName) {
+        const name = itemName.toLowerCase();
+        
+        if (name.includes('helmet')) {
+            return `
+                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
+                <option value="Protection IV (+2 Dias)">Protection IV (+2 Dias)</option>
+                <option value="Respiration III (+1 Dia)">Respiration III (+1 Dia)</option>
+                <option value="Aqua Affinity (+1 Dia)">Aqua Affinity (+1 Dia)</option>
+                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
+                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
+            `;
+        } else if (name.includes('chestplate') || name.includes('leggings') || name.includes('boots')) {
+            return `
+                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
+                <option value="Protection IV (+2 Dias)">Protection IV (+2 Dias)</option>
+                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
+                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
+            `;
+        } else if (name.includes('sword')) {
+            return `
+                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
+                <option value="Sharpness V (+2 Dias)">Sharpness V (+2 Dias)</option>
+                <option value="Looting III (+2 Dias)">Looting III (+2 Dias)</option>
+                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
+                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
+            `;
+        } else if (name.includes('pickaxe') || name.includes('axe') || name.includes('shovel')) {
+            return `
+                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
+                <option value="Efficiency V (+2 Dias)">Efficiency V (+2 Dias)</option>
+                <option value="Fortune III (+2 Dias)">Fortune III (+2 Dias)</option>
+                <option value="Silk Touch (+2 Dias)">Silk Touch (+2 Dias)</option>
+                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
+                <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
+            `;
+        } else if (name.includes('bow') || name.includes('crossbow')) {
+            return `
+                <option value="Ohne Verzauberung">Ohne Verzauberung</option>
+                <option value="Power V (+2 Dias)">Power V (+2 Dias)</option>
+                <option value="Infinity (+2 Dias)">Infinity (+2 Dias)</option>
+                <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
+            `;
+        }
+        return '';
     }
 
     async function loadProducts() {
@@ -333,18 +375,8 @@
         }
 
         container.innerHTML = filtered.map(p => {
-            let enchantHtml = '';
-            if (isEnchantable(p)) {
-                enchantHtml = `
-                    <select class="select-enchant" id="enchant-${p.id}">
-                        <option value="Ohne Verzauberung">Ohne Verzauberung</option>
-                        <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
-                        <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
-                        <option value="Protection / Sharpness IV (+2 Dias)">Protection / Sharpness IV (+2 Dias)</option>
-                        <option value="Efficiency V (+2 Dias)">Efficiency V (+2 Dias)</option>
-                    </select>
-                `;
-            }
+            let enchantOptions = getEnchantOptions(p.name);
+            let enchantHtml = enchantOptions ? `<select class="select-enchant" id="enchant-${p.id}">${enchantOptions}</select>` : '';
 
             return `
                 <div class="item-card">
@@ -451,7 +483,6 @@
         cartContainer.innerHTML = cart.map((item, index) => {
             totalItemsCount += item.amount;
             
-            // Rechnet Diamanten zusammen, falls der Preis in "Diamonds" angegeben ist
             if (item.price.includes("Diamond")) {
                 let num = parseInt(item.price) || 0;
                 totalDiamonds += (num * item.amount);
