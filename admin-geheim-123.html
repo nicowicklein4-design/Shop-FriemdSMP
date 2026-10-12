@@ -162,11 +162,11 @@
             return;
         }
 
-        // Neueste Bestellungen zuerst
+        // Neueste Bestellungen zuerst anzeigen
         const sorted = [...allOrders].reverse();
 
         container.innerHTML = sorted.map(order => {
-            const itemsHtml = order.cartItems.map(i => `• <b>${i.amount}x</b> ${i.customName || i.name} <span style="color:#55ffff;">(${i.price})</span>`).join('<br>');
+            const itemsHtml = order.cartItems.map(i => `• <b>${i.amount}x</b> ${i.customName || i.name} <span style="color:#ffaa00;">(${i.price})</span>`).join('<br>');
 
             return `
                 <div class="order-card">
@@ -195,20 +195,23 @@
         }).join('');
     }
 
+    // Ändert den Status einer Bestellung (z.B. Abgelehnt ❌ oder Geliefert ✅)
     async function updateOrderStatus(orderId, newStatus) {
         let order = allOrders.find(o => o.id === orderId);
         if (order) {
             order.status = newStatus;
             await saveToCloud();
             renderOrders();
+            alert(`Bestellungs-Status geändert zu: ${newStatus}`);
         }
     }
 
+    // Erlaubt das Ändern von Wunsch-Preisen
     async function adjustWishPrice(orderId) {
         let order = allOrders.find(o => o.id === orderId);
         if (!order) return;
 
-        let newPrice = prompt("Gib den neuen Preis/Währung für die Wünsche dieser Bestellung ein (z.B. 3 Dias / 5x Eisen):");
+        let newPrice = prompt("Gib den neuen Preis/Währung für die Wünsche dieser Bestellung ein (z.B. 3 Diamonds / 5x Iron Ingot):");
         if (newPrice) {
             order.cartItems.forEach(item => {
                 item.price = newPrice;
@@ -219,14 +222,16 @@
         }
     }
 
+    // Löscht eine Bestellung aus der Cloud
     async function deleteOrder(orderId) {
-        if (confirm("Möchtest du diese Bestellung wirklich löschen?")) {
+        if (confirm("Möchtest du diese Bestellung wirklich unwiderruflich löschen?")) {
             allOrders = allOrders.filter(o => o.id !== orderId);
             await saveToCloud();
             renderOrders();
         }
     }
 
+    // Speichert den aktuellen Zustand zurück in deine JSONBin Cloud
     async function saveToCloud() {
         try {
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
