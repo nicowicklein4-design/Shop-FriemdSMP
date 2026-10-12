@@ -209,12 +209,12 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .total-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--accent-diamond);
+        .total-price-box {
             margin-top: 15px;
-            text-align: right;
+            padding-top: 10px;
+            border-top: 2px dashed var(--border-pixel);
+            font-size: 0.95rem;
+            color: var(--accent-diamond);
         }
     </style>
 </head>
@@ -223,7 +223,7 @@
 <div class="container">
     <header>
         <h1>💎 CA14 Item Shop</h1>
-        <p style="color: #aaa; margin-top: 5px;">Faire Preise (Kohle, Eisen, Dias), Verzauberungen & Wunschbox!</p>
+        <p style="color: #aaa; margin-top: 5px;">Rezeptgetreue Preise, Verzauberungen & Wunschbox!</p>
     </header>
 
     <div class="shop-layout">
@@ -252,11 +252,11 @@
             <div class="custom-wish-card">
                 <div class="custom-wish-title">🎁 Wunschbox (Submit Wish)</div>
                 <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 12px;">
-                    Item nicht im Shop? Trage Name & deine gebotene Währung (z.B. 2x Coal / 1x Iron Ingot / 1x Diamond) ein!
+                    Item nicht im Shop? Trage Name & Währung (z.B. 2x Coal / 1x Iron Ingot / 1x Diamond) ein!
                 </p>
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
                     <input type="text" id="wish-item-name" placeholder="z. B. Beacon / Nether Star">
-                    <input type="text" id="wish-item-price" placeholder="Preis (z.B. 1x Iron Ingot)">
+                    <input type="text" id="wish-item-price" placeholder="Preis (z.B. 5 Diamonds)">
                 </div>
                 <button class="btn btn-wish" style="margin-top: 10px; width: 100%;" onclick="submitWish()">+ Wunsch abschicken & in Shop legen</button>
             </div>
@@ -268,7 +268,9 @@
                 <p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist noch leer.</p>
             </div>
 
-            <div class="total-price" id="total-price">Anzahl Positionen: 0</div>
+            <div class="total-price-box" id="total-price">
+                Gesamtsumme: 0 Items
+            </div>
 
             <form id="order-form" style="margin-top: 20px;" onsubmit="handleOrder(event)">
                 <label style="font-size: 0.8rem; color: #aaa;">Minecraft Name *</label>
@@ -295,7 +297,6 @@
     let currentCategory = "Alle";
     let cart = [];
 
-    // Liste von Items, die WIRKLICH verzaubert werden können
     function isEnchantable(item) {
         const name = item.name.toLowerCase();
         const enchantKeywords = ['helmet', 'chestplate', 'leggings', 'boots', 'sword', 'pickaxe', 'axe', 'shovel', 'hoe', 'bow', 'crossbow', 'trident', 'elytra', 'shield'];
@@ -439,11 +440,25 @@
 
         if (cart.length === 0) {
             cartContainer.innerHTML = `<p style="color: #777; font-size: 0.85rem;">Dein Warenkorb ist noch leer.</p>`;
-            totalContainer.innerText = "Anzahl Positionen: 0";
+            totalContainer.innerHTML = "<b>Gesamtsumme:</b> 0 Items";
             return;
         }
 
+        let totalDiamonds = 0;
+        let totalItemsCount = 0;
+        let otherCosts = [];
+
         cartContainer.innerHTML = cart.map((item, index) => {
+            totalItemsCount += item.amount;
+            
+            // Rechnet Diamanten zusammen, falls der Preis in "Diamonds" angegeben ist
+            if (item.price.includes("Diamond")) {
+                let num = parseInt(item.price) || 0;
+                totalDiamonds += (num * item.amount);
+            } else {
+                otherCosts.push(`${item.amount}x (${item.price})`);
+            }
+
             return `
                 <div class="cart-item">
                     <span><b>${item.amount}x</b> ${item.customName || item.name}<br><small style="color:#ffaa00;">Preis: ${item.price}</small></span>
@@ -452,7 +467,16 @@
             `;
         }).join('');
 
-        totalContainer.innerText = `Anzahl Positionen: ${cart.length}`;
+        let totalText = `<b>Gesamtsumme:</b> ${totalItemsCount} Positionen<br>`;
+        if (totalDiamonds > 0) {
+            totalText += `<span style="color:#55ffff;">💎 ${totalDiamonds} Diamonds</span>`;
+        }
+        if (otherCosts.length > 0) {
+            if (totalDiamonds > 0) totalText += " + ";
+            totalText += `<small style="color:#ffaa00;">${otherCosts.join(" + ")}</small>`;
+        }
+
+        totalContainer.innerHTML = totalText;
     }
 
     async function handleOrder(e) {
