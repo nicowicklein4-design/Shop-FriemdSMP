@@ -674,19 +674,39 @@
     }
 
     async function sendToCloud(orderData) {
-        if (!BIN_ID || BIN_ID.includes("DEINE_BIN")) return;
-        try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
+    if (!BIN_ID || BIN_ID.includes("DEINE_BIN")) return;
+    try {
+        // 1. Neueste Bestellungen abrufen
+        let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { 'X-Master-Key': API_KEY }
+        });
+        
+        let orders = [];
+        if (res.ok) {
             let data = await res.json();
-            let orders = Array.isArray(data.record) ? data.record : [];
-            orders.push(orderData);
+            orders = Array.isArray(data.record) ? data.record : [];
+        }
 
-            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(orders)
+        // 2. Neue Bestellung anfügen
+        orders.push(orderData);
+
+        // 3. Aktualisiertes Array zurückschreiben
+        let putRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'X-Master-Key': API_KEY 
+            },
+            body: JSON.stringify(orders)
+        });
+
+        if (!putRes.ok) {
+            console.error("JSONBin PUT-Fehler Status:", putRes.status);
+        }
+    } catch (err) {
+        console.error("Cloud Fehler:", err);
+    }
+}
             });
         } catch (err) {
             console.error("Cloud Fehler:", err);
