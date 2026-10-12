@@ -116,7 +116,7 @@
         }
 
         .item-price {
-            color: var(--accent-diamond);
+            color: var(--accent-gold);
             font-weight: 600;
             margin-bottom: 10px;
             font-size: 0.85rem;
@@ -223,25 +223,25 @@
 <div class="container">
     <header>
         <h1>💎 CA14 Item Shop</h1>
-        <p style="color: #aaa; margin-top: 5px;">Günstige Preise, Verzauberungen & Wunschbox!</p>
+        <p style="color: #aaa; margin-top: 5px;">Faire Preise (Kohle, Eisen, Dias), Verzauberungen & Wunschbox!</p>
     </header>
 
     <div class="shop-layout">
         <div>
             <div class="filter-section">
-                <input type="text" id="search-input" placeholder="🔍 Item suchen..." oninput="filterProducts()">
+                <input type="text" id="search-input" placeholder="🔍 Item suchen (English Name)..." oninput="filterProducts()">
                 <div class="category-buttons" id="cat-buttons">
                     <button class="btn-cat active" onclick="setCategory('Alle', this)">Alle</button>
                     <button class="btn-cat" onclick="setCategory('Wünsche', this)">🎁 Wünsche</button>
-                    <button class="btn-cat" onclick="setCategory('building blocks', this)">Baublöcke</button>
-                    <button class="btn-cat" onclick="setCategory('colored blocks', this)">Farblöcke</button>
-                    <button class="btn-cat" onclick="setCategory('natural blocks', this)">Natur</button>
-                    <button class="btn-cat" onclick="setCategory('functional blocks', this)">Funktional</button>
+                    <button class="btn-cat" onclick="setCategory('building blocks', this)">Building Blocks</button>
+                    <button class="btn-cat" onclick="setCategory('colored blocks', this)">Colored Blocks</button>
+                    <button class="btn-cat" onclick="setCategory('natural blocks', this)">Natural Blocks</button>
+                    <button class="btn-cat" onclick="setCategory('functional blocks', this)">Functional</button>
                     <button class="btn-cat" onclick="setCategory('redstone blocks', this)">Redstone</button>
-                    <button class="btn-cat" onclick="setCategory('tools & utilities', this)">Werkzeuge</button>
-                    <button class="btn-cat" onclick="setCategory('combat', this)">Kampf</button>
-                    <button class="btn-cat" onclick="setCategory('food & drinks', this)">Essen & Tränke</button>
-                    <button class="btn-cat" onclick="setCategory('ingredients', this)">Zutaten</button>
+                    <button class="btn-cat" onclick="setCategory('tools & utilities', this)">Tools & Utilities</button>
+                    <button class="btn-cat" onclick="setCategory('combat', this)">Combat</button>
+                    <button class="btn-cat" onclick="setCategory('food & drinks', this)">Food & Drinks</button>
+                    <button class="btn-cat" onclick="setCategory('ingredients', this)">Ingredients</button>
                 </div>
             </div>
 
@@ -250,15 +250,15 @@
             </div>
 
             <div class="custom-wish-card">
-                <div class="custom-wish-title">🎁 Wunschbox (Wunsch einreichen)</div>
+                <div class="custom-wish-title">🎁 Wunschbox (Submit Wish)</div>
                 <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 12px;">
-                    Nicht im Shop? Trage es hier ein & nenne deine Währung (z.B. 1x Eisen / 5x Kohle / 1x Dia)!
+                    Item nicht im Shop? Trage Name & deine gebotene Währung (z.B. 2x Coal / 1x Iron Ingot / 1x Diamond) ein!
                 </p>
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-                    <input type="text" id="wish-item-name" placeholder="z. B. 64x Erde / Beacon">
-                    <input type="text" id="wish-item-price" placeholder="Preis (z.B. 1x Eisen)">
+                    <input type="text" id="wish-item-name" placeholder="z. B. Beacon / Nether Star">
+                    <input type="text" id="wish-item-price" placeholder="Preis (z.B. 1x Iron Ingot)">
                 </div>
-                <button class="btn btn-wish" style="margin-top: 10px; width: 100%;" onclick="submitWish()">+ Wunsch in Shop & Warenkorb legen</button>
+                <button class="btn btn-wish" style="margin-top: 10px; width: 100%;" onclick="submitWish()">+ Wunsch abschicken & in Shop legen</button>
             </div>
         </div>
 
@@ -295,6 +295,13 @@
     let currentCategory = "Alle";
     let cart = [];
 
+    // Liste von Items, die WIRKLICH verzaubert werden können
+    function isEnchantable(item) {
+        const name = item.name.toLowerCase();
+        const enchantKeywords = ['helmet', 'chestplate', 'leggings', 'boots', 'sword', 'pickaxe', 'axe', 'shovel', 'hoe', 'bow', 'crossbow', 'trident', 'elytra', 'shield'];
+        return enchantKeywords.some(keyword => name.includes(keyword));
+    }
+
     async function loadProducts() {
         try {
             let res = await fetch('items.json');
@@ -315,7 +322,7 @@
 
         const filtered = products.filter(p => {
             const matchesCat = (currentCategory === "Alle" || p.category === currentCategory);
-            const matchesSearch = p.name.toLowerCase().includes(searchInput);
+            const matchesSearch = p.name.toLowerCase().includes(searchInput) || p.id.toLowerCase().includes(searchInput);
             return matchesCat && matchesSearch;
         });
 
@@ -325,16 +332,15 @@
         }
 
         container.innerHTML = filtered.map(p => {
-            let isEquip = (p.category === 'combat' || p.category === 'tools & utilities');
-            
             let enchantHtml = '';
-            if (isEquip) {
+            if (isEnchantable(p)) {
                 enchantHtml = `
                     <select class="select-enchant" id="enchant-${p.id}">
                         <option value="Ohne Verzauberung">Ohne Verzauberung</option>
                         <option value="Mending (+1 Dia)">Mending (+1 Dia)</option>
-                        <option value="Haltbarkeit III (+1 Dia)">Haltbarkeit III (+1 Dia)</option>
-                        <option value="Effizienz / Schärfe V (+2 Dias)">Effizienz / Schärfe V (+2 Dias)</option>
+                        <option value="Unbreaking III (+1 Dia)">Unbreaking III (+1 Dia)</option>
+                        <option value="Protection / Sharpness IV (+2 Dias)">Protection / Sharpness IV (+2 Dias)</option>
+                        <option value="Efficiency V (+2 Dias)">Efficiency V (+2 Dias)</option>
                     </select>
                 `;
             }
@@ -343,7 +349,7 @@
                 <div class="item-card">
                     <div>
                         <div class="item-title">${p.name}</div>
-                        <div class="item-price">💎 ${p.price}</div>
+                        <div class="item-price">💰 ${p.price}</div>
                         ${enchantHtml}
                     </div>
                     <button class="btn" onclick="addToCart('${p.id}')">+ Hinzufügen</button>
@@ -396,7 +402,7 @@
         const priceInput = document.getElementById('wish-item-price');
 
         const wishName = nameInput.value.trim();
-        const wishPrice = priceInput.value.trim() || "1x Eisen / VH";
+        const wishPrice = priceInput.value.trim() || "1x Iron Ingot";
 
         if (!wishName) {
             alert("Bitte gib den Namen des Wunsch-Items ein!");
@@ -440,7 +446,7 @@
         cartContainer.innerHTML = cart.map((item, index) => {
             return `
                 <div class="cart-item">
-                    <span><b>${item.amount}x</b> ${item.customName || item.name}<br><small style="color:#55ffff;">Preis: ${item.price}</small></span>
+                    <span><b>${item.amount}x</b> ${item.customName || item.name}<br><small style="color:#ffaa00;">Preis: ${item.price}</small></span>
                     <button class="btn btn-remove" onclick="removeFromCart(${index})">X</button>
                 </div>
             `;
