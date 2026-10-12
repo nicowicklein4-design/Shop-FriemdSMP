@@ -202,6 +202,39 @@
         await saveToCloud();
         renderOrders();
 
+        // Discord Ping senden
+        if (DISCORD_WEBHOOK_URL && !DISCORD_WEBHOOK_URL.includes("DEIN_DISCORD")) {
+            let discordInput = order.discord.trim();
+            
+            // Prüfen, ob der Spieler bereits eine ID eingegeben hat (z.B. 123456789 oder <@123456789>)
+            let pingTarget = discordInput;
+            if (!discordInput.includes("<@")) {
+                // Wenn es eine reine ID ist, formatieren wir sie als Discord-Ping
+                if (/^\d+$/.test(discordInput)) {
+                    pingTarget = `<@${discordInput}>`;
+                } else {
+                    // Falls es ein normaler Textname ist (z.B. "gamer123"), senden wir ihn als Textmention
+                    pingTarget = `@${discordInput}`;
+                }
+            }
+            
+            const messagePayload = {
+                content: `📦 **Lieferung abgeschlossen!**\nHey ${pingTarget}, deine Bestellung wurde erfolgreich bei deinen Koordinaten **${order.coords}** geliefert! Viel Spaß damit! 🎉`,
+                allowed_mentions: {
+                    parse: ["users", "roles"] // Zwingt Discord dazu, die User-ID als echten Ping zu werten!
+                }
+            };
+
+            fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(messagePayload)
+            }).catch(err => console.error(err));
+        }
+
+        alert(`Bestellung als geliefert markiert und Ping gesendet!`);
+    }
+
         // Discord Ping ohne Item-Inhalt senden
         if (DISCORD_WEBHOOK_URL && !DISCORD_WEBHOOK_URL.includes("DEIN_DISCORD")) {
             const pingText = order.discord ? `@${order.discord}` : order.player;
